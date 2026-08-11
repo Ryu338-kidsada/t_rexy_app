@@ -37,16 +37,10 @@ class _LoginScreenState extends State<LoginScreen> {
       password: _passwordController.text,
     );
  
-    if (!mounted) return;
- 
-    if (success) {
+    if (success && mounted) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const HomeScreen()),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(authProvider.errorMessage ?? 'เกิดข้อผิดพลาด')),
       );
     }
   }
@@ -73,10 +67,13 @@ class _LoginScreenState extends State<LoginScreen> {
               children: [
                 Container(
                   decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [Color(0xFF14432B), AppColors.deepForest],
+                    image: DecorationImage(
+                      image: AssetImage('assets/images/bg_jungle.jpg'),
+                      fit: BoxFit.cover,
+                      colorFilter: ColorFilter.mode(
+                        Colors.black54,
+                        BlendMode.darken,
+                      )
                     ),
                   ),
                 ),
@@ -122,14 +119,16 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 Center(
                   child: Container(
-                    width: 110,
-                    height: 110,
+                    width: 130,
+                    height: 130,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(color: Colors.white24, width: 1),
-                      color: Colors.white10,
+                      image: const DecorationImage(
+                        image: AssetImage('assets/images/logo_trexy.png'),
+                        fit: BoxFit.cover,
+                      ),
                     ),
-                    child: const Icon(Icons.pets, size: 46, color: AppColors.white),
                   ),
                 ),
               ],
@@ -189,6 +188,16 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       const SizedBox(height: 8),
+ 
+                      if (authProvider.status == AuthStatus.error &&
+                          authProvider.errorMessage != null)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Text(
+                            authProvider.errorMessage!,
+                            style: const TextStyle(color: Colors.redAccent, fontSize: 12),
+                          ),
+                        ),
  
                       Align(
                         alignment: Alignment.centerRight,

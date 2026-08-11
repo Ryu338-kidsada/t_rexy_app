@@ -76,10 +76,13 @@ class _SignupScreenState extends State<SignupScreen> {
               children: [
                 Container(
                   decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [Color(0xFF14432B), AppColors.deepForest],
+                    image: DecorationImage(
+                      image: AssetImage('assets/images/bg_jungle.jpg'),
+                      fit: BoxFit.cover,
+                      colorFilter: ColorFilter.mode(
+                        Colors.black54,
+                        BlendMode.darken,
+                      )
                     ),
                   ),
                 ),
@@ -125,14 +128,16 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
                 Center(
                   child: Container(
-                    width: 100,
-                    height: 100,
+                    width: 130,
+                    height: 130,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(color: Colors.white24, width: 1),
-                      color: Colors.white10,
+                      image: const DecorationImage(
+                        image: AssetImage('assets/images/logo_trexy.png'),
+                        fit: BoxFit.cover,
+                      ),
                     ),
-                    child: const Icon(Icons.pets, size: 42, color: AppColors.white),
                   ),
                 ),
               ],

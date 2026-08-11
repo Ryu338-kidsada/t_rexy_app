@@ -12,22 +12,15 @@ class GetStartedScreen extends StatelessWidget {
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        // TODO: เปลี่ยนเป็นรูปพื้นหลังป่าจริงจาก Figma
-        // decoration: const BoxDecoration(
-        //   image: DecorationImage(
-        //     image: AssetImage('assets/images/bg_get_started.jpg'),
-        //     fit: BoxFit.cover,
-        //   ),
-        // ),
-        // ตอนนี้ใช้ gradient แทนไปก่อน ระหว่างรอไฟล์รูปจริง
+        // รูปพื้นหลังป่าจริง
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF14432B),
-              AppColors.deepForest,
-            ],
+          image: DecorationImage(
+            image: AssetImage('assets/images/bg_jungle.jpg'),
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(
+              Colors.black54,
+              BlendMode.darken,
+            )
           ),
         ),
         child: SafeArea(
@@ -39,22 +32,15 @@ class GetStartedScreen extends StatelessWidget {
  
                 // โลโก้วงกลม (กะโหลกไดโนเสาร์)
                 Container(
-                  width: 140,
-                  height: 140,
+                  width: 150,
+                  height: 150,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(color: Colors.white24, width: 1),
-                    // TODO: เปลี่ยนเป็นรูปโลโก้จริงจาก Figma
-                    // image: const DecorationImage(
-                    //   image: AssetImage('assets/images/logo_trexy.png'),
-                    //   fit: BoxFit.cover,
-                    // ),
-                    color: Colors.white10,
-                  ),
-                  child: const Icon(
-                    Icons.pets, // placeholder ไอคอน รอรูปจริง
-                    size: 60,
-                    color: AppColors.white,
+                    image: const DecorationImage(
+                      image: AssetImage('assets/images/logo_trexy.png'),
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
  
@@ -70,7 +56,7 @@ class GetStartedScreen extends StatelessWidget {
                   ),
                 ),
  
-                const Spacer(flex: 5),
+                const Spacer(flex: 3),
  
                 PrimaryButton(
                   label: 'Get Started',
@@ -90,7 +76,7 @@ class GetStartedScreen extends StatelessWidget {
                   style: TextStyle(color: AppColors.whiteFaded, fontSize: 12),
                 ),
  
-                Spacer(flex: 2)
+                const Spacer(flex: 1),
               ],
             ),
           ),
