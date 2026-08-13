@@ -64,14 +64,18 @@ class _SignupScreenState extends State<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
- 
+    final screenHeight = MediaQuery.of(context).size.height;
+    final isKeyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
+    final topSectionHeight = isKeyboardOpen ? screenHeight * 0.10 : screenHeight * 0.28;
+
     return Scaffold(
       backgroundColor: AppColors.deepForest,
       body: Column(
         children: [
           // ส่วนบน: พื้นหลังป่า + โลโก้ + back arrow + ลิงก์ sign in
-          SizedBox(
-            height: 260,
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            height: topSectionHeight,
             child: Stack(
               children: [
                 Container(

@@ -55,14 +55,19 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
- 
+    final screenHeight = MediaQuery.of(context).size.height;
+    final isKeyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
+    // สัดส่วน % ของจอ แทนตัวเลขตายตัว + หดเมื่อคีย์บอร์ดเปิด
+    final topSectionHeight = isKeyboardOpen ? screenHeight * 0.12 : screenHeight * 0.32;
+
     return Scaffold(
       backgroundColor: AppColors.deepForest,
       body: Column(
         children: [
           // ส่วนบน: พื้นหลังป่า + โลโก้ + back arrow + ลิงก์ signup
-          SizedBox(
-            height: 300,
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            height: topSectionHeight,
             child: Stack(
               children: [
                 Container(
