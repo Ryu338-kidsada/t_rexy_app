@@ -158,7 +158,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 SliverToBoxAdapter(
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
+                    padding: const EdgeInsets.fromLTRB(20, 28, 20, 32),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -173,12 +173,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: ListView.separated(
                             scrollDirection: Axis.horizontal,
                             itemCount: _tabs.length,
-                            separatorBuilder: (_, __) => const SizedBox(width: 4),
+                            separatorBuilder: (_, __) =>
+                                const SizedBox(width: 4),
                             itemBuilder: (context, index) {
                               return _TabItem(
                                 label: _tabs[index],
                                 selected: _selectedTab == index,
-                                onTap: () => setState(() => _selectedTab = index),
+                                onTap: () =>
+                                    setState(() => _selectedTab = index),
                               );
                             },
                           ),
@@ -190,110 +192,13 @@ class _HomeScreenState extends State<HomeScreen> {
                           height: 1,
                         ),
                         const SizedBox(height: 14),
-                        _GlassPanel(
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                width: 36,
-                                height: 36,
-                                decoration: BoxDecoration(
-                                  color: _accentGreen.withValues(alpha: 0.12),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: const Icon(
-                                  Icons.menu_book_rounded,
-                                  color: _accentGreen,
-                                  size: 18,
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Text(
-                                  'ข้อมูล',
-                                  style: TextStyle(
-                                    color: Colors.grey.shade400,
-                                    fontSize: 13,
-                                    height: 1.5,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 28, 20, 32),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const _SectionTitle(
-                          title: 'โลกที่มันเคยเดิน',
-                          subtitle:
-                              'สำรวจแผนที่ประเทศที่พบซากดึกดำบรรพ์และแหล่งฟอสซิล',
-                        ),
-                        const SizedBox(height: 14),
-                        AspectRatio(
-                          aspectRatio: 16 / 9,
-                          child: _GlassPanel(
-                            padding: EdgeInsets.zero,
-                            child: Stack(
-                              fit: StackFit.expand,
-                              children: [
-                                DecoratedBox(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(16),
-                                    gradient: LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                      colors: [
-                                        _surfaceCard,
-                                        AppColors.primaryGreen.withValues(alpha: 0.6),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                CustomPaint(
-                                  painter: _GridPatternPainter(
-                                    color: _accentGreen.withValues(alpha: 0.08),
-                                  ),
-                                ),
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      width: 52,
-                                      height: 52,
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: _accentGreen.withValues(alpha: 0.15),
-                                        border: Border.all(
-                                          color: _accentGreen.withValues(alpha: 0.35),
-                                        ),
-                                      ),
-                                      child: const Icon(
-                                        Icons.map_rounded,
-                                        color: _accentGreen,
-                                        size: 26,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Text(
-                                      'ภาพสถานที่ 16:9',
-                                      style: TextStyle(
-                                        color: Colors.grey.shade400,
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
+                        AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 250),
+                          switchInCurve: Curves.easeOutCubic,
+                          switchOutCurve: Curves.easeInCubic,
+                          child: KeyedSubtree(
+                            key: ValueKey(_selectedTab),
+                            child: _DeepDiveTabBody(tabIndex: _selectedTab),
                           ),
                         ),
                       ],
@@ -373,7 +278,8 @@ class _HeaderSection extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
               child: const Padding(
                 padding: EdgeInsets.all(10),
-                child: Icon(Icons.logout_rounded, color: AppColors.white, size: 20),
+                child: Icon(Icons.logout_rounded,
+                    color: AppColors.white, size: 20),
               ),
             ),
           ),
@@ -546,6 +452,490 @@ class _TabItem extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _DeepDiveTabBody extends StatelessWidget {
+  final int tabIndex;
+
+  const _DeepDiveTabBody({required this.tabIndex});
+
+  @override
+  Widget build(BuildContext context) {
+    switch (tabIndex) {
+      case 1:
+        return const _TimelinePanel();
+      case 2:
+        return const _InfoPanel(
+          icon: Icons.accessibility_new_rounded,
+          title: 'กายวิภาค',
+          body: 'ฟันหยักแบบนักล่าขนาดใหญ่ ประมาณ 60 ซี่ ลำตัวยาวราว 10 เมตร '
+              'น้ำหนักประมาณ 3–4 ตัน จัดอยู่ในกลุ่ม Carcharodontosauridae '
+              'มีกระดูกที่แข็งแรงเหมาะกับการวิ่งไล่เหยื่อในพื้นที่ราบลุ่มยุคครีเทเชียส',
+        );
+      case 3:
+        return const _InfoPanel(
+          icon: Icons.info_outline_rounded,
+          title: 'เพิ่มเติม',
+          body:
+              'ตั้งชื่อวิทยาศาสตร์ว่า Siamraptor suwati โดย Chokchaloemwong และคณะ '
+              'ซากถูกพบในกลุ่มหินโคราช จังหวัดนครราชสีมา '
+              'ถือเป็นหลักฐานสำคัญของไดโนเสาร์นักล่าขนาดใหญ่ในเอเชียตะวันออกเฉียงใต้',
+        );
+      default:
+        return const _StoryPanel();
+    }
+  }
+}
+
+class _StoryPanel extends StatelessWidget {
+  const _StoryPanel();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _InfoPanel(
+          icon: Icons.menu_book_rounded,
+          title: 'เรื่องราว',
+          body:
+              'สยามแรปเตอร์ สุวัธนี่ คือไดโนเสาร์นักล่าที่เคยอาศัยในดินแดนไทยเมื่อกว่า 113 ล้านปีก่อน '
+              'มันล่าเหยื่อในระบบนิเวศป่าชื้นและที่ราบน้ำท่วมถึงของยุคครีเทเชียสตอนต้น '
+              'ฟอสซิลที่พบช่วยเล่าเรื่องวิวัฒนาการของวงศ์นักล่าขนาดใหญ่ในภูมิภาคนี้',
+        ),
+        SizedBox(height: 28),
+        _SectionTitle(
+          title: 'พฤติกรรม',
+          subtitle: 'รูปแบบการล่าและชนิดอาหาร (ข้อมูลจำลอง)',
+        ),
+        SizedBox(height: 14),
+        _BehaviorPanel(),
+        SizedBox(height: 28),
+        _SectionTitle(
+          title: 'โลกที่มันเคยเดิน',
+          subtitle: 'สำรวจแผนที่ประเทศที่พบซากดึกดำบรรพ์และแหล่งฟอสซิล',
+        ),
+        SizedBox(height: 14),
+        _HabitatMapCard(),
+      ],
+    );
+  }
+}
+
+class _BehaviorPanel extends StatelessWidget {
+  const _BehaviorPanel();
+
+  @override
+  Widget build(BuildContext context) {
+    return _GlassPanel(
+      padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
+      child: Column(
+        children: [
+          const _BehaviorGroup(
+            icon: Icons.groups_rounded,
+            label: 'รูปแบบการล่า',
+            selected: 'ล่าเดี่ยว',
+            options: ['ล่าเดี่ยว', 'ล่าฝูง'],
+            note:
+                'สันนิษฐานจากขนาดลำตัวที่ใหญ่ เหมาะกับการไล่ล่าเหยื่อตามลำพัง',
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: Divider(
+              height: 1,
+              thickness: 1,
+              color: Colors.white.withValues(alpha: 0.08),
+            ),
+          ),
+          const _BehaviorGroup(
+            icon: Icons.restaurant_rounded,
+            label: 'ชนิดอาหาร',
+            selected: 'กินเนื้อ',
+            options: ['กินพืช', 'กินเนื้อ', 'กินทั้งสองอย่าง'],
+            note: 'ฟันหยักคมและกรามแข็งแรง บ่งชี้ว่าเป็นนักล่ากินเนื้อ',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _BehaviorGroup extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String selected;
+  final List<String> options;
+  final String note;
+
+  const _BehaviorGroup({
+    required this.icon,
+    required this.label,
+    required this.selected,
+    required this.options,
+    required this.note,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(icon, color: _accentGreen, size: 16),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: const TextStyle(
+                color: AppColors.white,
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            for (final option in options)
+              _BehaviorChip(
+                label: option,
+                selected: option == selected,
+              ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        Text(
+          note,
+          style: TextStyle(
+            color: Colors.grey.shade400,
+            fontSize: 12,
+            height: 1.45,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _BehaviorChip extends StatelessWidget {
+  final String label;
+  final bool selected;
+
+  const _BehaviorChip({required this.label, required this.selected});
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 180),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: selected
+            ? _accentGreen.withValues(alpha: 0.18)
+            : Colors.white.withValues(alpha: 0.04),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: selected
+              ? _accentGreen.withValues(alpha: 0.7)
+              : Colors.white.withValues(alpha: 0.12),
+        ),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          color: selected ? _accentGreenSoft : Colors.grey.shade400,
+          fontSize: 12,
+          fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+        ),
+      ),
+    );
+  }
+}
+
+class _HabitatMapCard extends StatelessWidget {
+  const _HabitatMapCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return AspectRatio(
+      aspectRatio: 16 / 9,
+      child: _GlassPanel(
+        padding: EdgeInsets.zero,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            DecoratedBox(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    _surfaceCard,
+                    AppColors.primaryGreen.withValues(alpha: 0.6),
+                  ],
+                ),
+              ),
+            ),
+            CustomPaint(
+              painter: _GridPatternPainter(
+                color: _accentGreen.withValues(alpha: 0.08),
+              ),
+            ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 52,
+                  height: 52,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: _accentGreen.withValues(alpha: 0.15),
+                    border: Border.all(
+                      color: _accentGreen.withValues(alpha: 0.35),
+                    ),
+                  ),
+                  child: const Icon(
+                    Icons.map_rounded,
+                    color: _accentGreen,
+                    size: 26,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  'ภาพสถานที่ 16:9',
+                  style: TextStyle(
+                    color: Colors.grey.shade400,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _InfoPanel extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String body;
+
+  const _InfoPanel({
+    required this.icon,
+    required this.title,
+    required this.body,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return _GlassPanel(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: _accentGreen.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(icon, color: _accentGreen, size: 18),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: AppColors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  body,
+                  style: TextStyle(
+                    color: Colors.grey.shade400,
+                    fontSize: 13,
+                    height: 1.55,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TimelineEvent {
+  final String period;
+  final String title;
+  final String detail;
+
+  const _TimelineEvent({
+    required this.period,
+    required this.title,
+    required this.detail,
+  });
+}
+
+class _TimelinePanel extends StatelessWidget {
+  const _TimelinePanel();
+
+  static const _events = [
+    _TimelineEvent(
+      period: '125–113 ล้านปีก่อน',
+      title: 'มีชีวิตในยุคครีเทเชียสตอนต้น',
+      detail:
+          'Siamraptor อาศัยอยู่ในพื้นที่ที่ปัจจุบันคือภาคตะวันออกเฉียงเหนือของไทย ช่วง Aptian',
+    ),
+    _TimelineEvent(
+      period: 'กลุ่มหินโคราช',
+      title: 'พบซากดึกดำบรรพ์',
+      detail:
+          'ฟอสซิลถูกค้นพบที่เหมืองหินในจังหวัดนครราชสีมา ช่วยยืนยันการมีอยู่ของนักล่าขนาดใหญ่ในภูมิภาคนี้',
+    ),
+    _TimelineEvent(
+      period: 'ค.ศ. 2019',
+      title: 'ตั้งชื่อวิทยาศาสตร์',
+      detail:
+          'ได้รับการตั้งชื่อว่า Siamraptor suwati โดย Chokchaloemwong และคณะ จากหลักฐานกระดูกที่ศึกษาได้',
+    ),
+    _TimelineEvent(
+      period: 'ปัจจุบัน',
+      title: 'หลักฐานทางบรรพชีวิน',
+      detail:
+          'ยังถูกใช้ศึกษาวิวัฒนาการของวงศ์ Carcharodontosauridae และระบบนิเวศไดโนเสาร์ในเอเชียตะวันออกเฉียงใต้',
+    ),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        for (var i = 0; i < _events.length; i++)
+          _TimelineNode(
+            event: _events[i],
+            isFirst: i == 0,
+            isLast: i == _events.length - 1,
+          ),
+      ],
+    );
+  }
+}
+
+class _TimelineNode extends StatelessWidget {
+  final _TimelineEvent event;
+  final bool isFirst;
+  final bool isLast;
+
+  const _TimelineNode({
+    required this.event,
+    required this.isFirst,
+    required this.isLast,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SizedBox(
+            width: 28,
+            child: Column(
+              children: [
+                Expanded(
+                  child: Container(
+                    width: 2,
+                    color: isFirst
+                        ? Colors.transparent
+                        : _accentGreen.withValues(alpha: 0.45),
+                  ),
+                ),
+                Container(
+                  width: 14,
+                  height: 14,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: _accentGreen,
+                    boxShadow: [
+                      BoxShadow(
+                        color: _accentGreen.withValues(alpha: 0.45),
+                        blurRadius: 8,
+                      ),
+                    ],
+                    border:
+                        Border.all(color: Colors.white.withValues(alpha: 0.35)),
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    width: 2,
+                    color: isLast
+                        ? Colors.transparent
+                        : _accentGreen.withValues(alpha: 0.45),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.only(bottom: isLast ? 0 : 12),
+              child: _GlassPanel(
+                padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      event.period,
+                      style: const TextStyle(
+                        color: _accentGreenSoft,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.4,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      event.title,
+                      style: const TextStyle(
+                        color: AppColors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      event.detail,
+                      style: TextStyle(
+                        color: Colors.grey.shade400,
+                        fontSize: 12,
+                        height: 1.5,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
