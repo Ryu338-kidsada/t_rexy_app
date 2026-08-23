@@ -468,13 +468,7 @@ class _DeepDiveTabBody extends StatelessWidget {
       case 1:
         return const _TimelinePanel();
       case 2:
-        return const _InfoPanel(
-          icon: Icons.accessibility_new_rounded,
-          title: 'กายวิภาค',
-          body: 'ฟันหยักแบบนักล่าขนาดใหญ่ ประมาณ 60 ซี่ ลำตัวยาวราว 10 เมตร '
-              'น้ำหนักประมาณ 3–4 ตัน จัดอยู่ในกลุ่ม Carcharodontosauridae '
-              'มีกระดูกที่แข็งแรงเหมาะกับการวิ่งไล่เหยื่อในพื้นที่ราบลุ่มยุคครีเทเชียส',
-        );
+        return const _AnatomyPanel();
       case 3:
         return const _InfoPanel(
           icon: Icons.info_outline_rounded,
@@ -506,6 +500,8 @@ class _StoryPanel extends StatelessWidget {
               'มันล่าเหยื่อในระบบนิเวศป่าชื้นและที่ราบน้ำท่วมถึงของยุคครีเทเชียสตอนต้น '
               'ฟอสซิลที่พบช่วยเล่าเรื่องวิวัฒนาการของวงศ์นักล่าขนาดใหญ่ในภูมิภาคนี้',
         ),
+        SizedBox(height: 22),
+        _DiscoveryPanel(),
         SizedBox(height: 28),
         _SectionTitle(
           title: 'พฤติกรรม',
@@ -521,6 +517,284 @@ class _StoryPanel extends StatelessWidget {
         SizedBox(height: 14),
         _HabitatMapCard(),
       ],
+    );
+  }
+}
+
+class _DiscoveryPanel extends StatelessWidget {
+  const _DiscoveryPanel();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SmallHeading(
+          title: 'การขุดค้นพบครั้งแรก',
+          subtitle: 'แหล่งขุดค้นและบริบทของการพบซากครั้งแรก',
+        ),
+        SizedBox(height: 12),
+        _FossilCard(
+          item: _FossilItem(
+            assetPath: 'assets/images/discovery_first.jpg',
+            part: 'นครราชสีมา',
+            title: 'เหมืองหินในกลุ่มหินโคราช',
+            description:
+                'ซากของ Siamraptor ถูกพบครั้งแรกที่เหมืองหินในจังหวัดนครราชสีมา '
+                'ภายในกลุ่มหินโคราช ช่วงยุคครีเทเชียสตอนต้น '
+                'การขุดค้นครั้งนั้นได้ชิ้นส่วนกระดูกหลายชิ้น ซึ่งต่อมาถูกใช้ศึกษาและตั้งชื่อวิทยาศาสตร์ในปี ค.ศ. 2019 '
+                'โดย Chokchaloemwong และคณะ',
+            placeholderLabel: 'รอใส่ภาพการขุดค้น',
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _FossilItem {
+  final String assetPath;
+  final String part;
+  final String title;
+  final String description;
+  final String placeholderLabel;
+
+  const _FossilItem({
+    required this.assetPath,
+    required this.part,
+    required this.title,
+    required this.description,
+    this.placeholderLabel = 'รอใส่ภาพฟอสซิล',
+  });
+}
+
+class _FossilGallery extends StatelessWidget {
+  const _FossilGallery();
+
+  static const _items = [
+    _FossilItem(
+      assetPath: 'assets/images/fossil_jaw.jpg',
+      part: 'ขากรรไกรบน',
+      title: 'กระดูกขากรรไกร',
+      description:
+          'ฟอสซิลขากรรไกรบนช่วยยืนยันลักษณะฟันหยักของนักล่า '
+          'และเป็นหลักฐานสำคัญที่ใช้ตั้งชื่อ Siamraptor suwati',
+    ),
+    _FossilItem(
+      assetPath: 'assets/images/fossil_vertebra.jpg',
+      part: 'กระดูกสันหลัง',
+      title: 'กระดูกสันหลังส่วนคอ',
+      description:
+          'รูปร่างของกระดูกสันหลังบ่งชี้คอที่แข็งแรง เหมาะกับการจับและฉีกเหยื่อ '
+          'สอดคล้องกับพฤติกรรมไดโนเสาร์กินเนื้อขนาดใหญ่',
+    ),
+    _FossilItem(
+      assetPath: 'assets/images/fossil_limb.jpg',
+      part: 'แขนและมือ',
+      title: 'กระดูกแขนส่วนหน้า',
+      description:
+          'ชิ้นส่วนแขนและอุ้งมือช่วยเล่าถึงการเคลื่อนไหวและการใช้กรงเล็บ '
+          'ขณะไล่ล่าในภูมิประเทศยุคครีเทเชียสของไทย',
+    ),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const _SmallHeading(
+          title: 'ภาพฟอสซิลและคำอธิบาย',
+          subtitle: 'หลักฐานซากดึกดำบรรพ์ที่ช่วยเล่าเรื่องของมัน',
+        ),
+        const SizedBox(height: 12),
+        for (var i = 0; i < _items.length; i++) ...[
+          _FossilCard(item: _items[i]),
+          if (i != _items.length - 1) const SizedBox(height: 12),
+        ],
+      ],
+    );
+  }
+}
+
+class _SmallHeading extends StatelessWidget {
+  final String title;
+  final String subtitle;
+
+  const _SmallHeading({required this.title, required this.subtitle});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Container(
+              width: 8,
+              height: 8,
+              decoration: BoxDecoration(
+                color: _accentGreen,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: _accentGreen.withValues(alpha: 0.45),
+                    blurRadius: 6,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              title,
+              style: const TextStyle(
+                color: AppColors.white,
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Padding(
+          padding: const EdgeInsets.only(left: 16),
+          child: Text(
+            subtitle,
+            style: TextStyle(
+              color: Colors.grey.shade400,
+              fontSize: 12,
+              height: 1.4,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _FossilCard extends StatelessWidget {
+  final _FossilItem item;
+
+  const _FossilCard({required this.item});
+
+  @override
+  Widget build(BuildContext context) {
+    return _GlassPanel(
+      padding: EdgeInsets.zero,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          AspectRatio(
+            aspectRatio: 16 / 9,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                ColoredBox(
+                  color: const Color(0xFF0A1F16),
+                  child: Image.asset(
+                    item.assetPath,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => _FossilPlaceholder(
+                      label: item.placeholderLabel,
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: 10,
+                  left: 10,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 5,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.5),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: _accentGreen.withValues(alpha: 0.4),
+                      ),
+                    ),
+                    child: Text(
+                      item.part,
+                      style: const TextStyle(
+                        color: _accentGreenSoft,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  item.title,
+                  style: const TextStyle(
+                    color: AppColors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  item.description,
+                  style: TextStyle(
+                    color: Colors.grey.shade400,
+                    fontSize: 13,
+                    height: 1.55,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FossilPlaceholder extends StatelessWidget {
+  final String label;
+
+  const _FossilPlaceholder({this.label = 'รอใส่ภาพ'});
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            _surfaceCard,
+            AppColors.primaryGreen.withValues(alpha: 0.55),
+          ],
+        ),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.image_search_rounded,
+            color: _accentGreen.withValues(alpha: 0.85),
+            size: 36,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            label,
+            style: TextStyle(
+              color: Colors.grey.shade400,
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -946,6 +1220,7 @@ class _GlassPanel extends StatelessWidget {
   final EdgeInsetsGeometry padding;
 
   const _GlassPanel({
+    super.key,
     required this.child,
     this.padding = const EdgeInsets.all(14),
   });
@@ -1112,6 +1387,421 @@ class _ToggleButton extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+// ─── Anatomy Panel ──────────────────────────────────────────────────────────
+
+class _AnatomyPart {
+  final int number;
+  final String label;
+  final String detail;
+
+  /// ตำแหน่งบนรูป (สัดส่วน 0.0–1.0 ของ width/height)
+  final double left;
+  final double top;
+
+  const _AnatomyPart({
+    required this.number,
+    required this.label,
+    required this.detail,
+    required this.left,
+    required this.top,
+  });
+}
+
+class _AnatomyPanel extends StatefulWidget {
+  const _AnatomyPanel();
+
+  @override
+  State<_AnatomyPanel> createState() => _AnatomyPanelState();
+}
+
+class _AnatomyPanelState extends State<_AnatomyPanel> {
+  int? _selected;
+  bool _showMarkers = true;
+
+  static const _parts = [
+    _AnatomyPart(
+      number: 1,
+      label: 'กะโหลกและขากรรไกร',
+      detail:
+          'กะโหลกยาวและแข็งแรง มีฟันหยักประมาณ 60 ซี่ เหมาะสำหรับฉีกเนื้อเหยื่อขนาดใหญ่',
+      left: 0.17,
+      top: 0.30,
+    ),
+    _AnatomyPart(
+      number: 2,
+      label: 'คอ',
+      detail: 'คอกล้ามเนื้อหนาและยืดหยุ่น รองรับน้ำหนักหัวขนาดใหญ่ขณะล่าเหยื่อ',
+      left: 0.25,
+      top: 0.35,
+    ),
+    _AnatomyPart(
+      number: 3,
+      label: 'กระดูกสันหลัง',
+      detail:
+          'กระดูกสันหลังเรียงต่อกันตลอดลำตัว ทำหน้าที่เป็นโครงสร้างหลักรับแรงกระแทก',
+      left: 0.37,
+      top: 0.35,
+    ),
+    _AnatomyPart(
+      number: 4,
+      label: 'แขนหน้า',
+      detail:
+          'แขนหน้าสั้นแต่มีกรงเล็บโค้งแหลม 3 นิ้ว ใช้จับและยึดเหยื่อขณะโจมตี',
+      left: 0.34,
+      top: 0.62,
+    ),
+    _AnatomyPart(
+      number: 5,
+      label: 'ขาหลัง',
+      detail: 'ขาหลังแข็งแรงยาว ประมาณการว่าวิ่งได้ 25–35 กม./ชม. บนพื้นราบ',
+      left: 0.47,
+      top: 0.62,
+    ),
+    _AnatomyPart(
+      number: 6,
+      label: 'หาง',
+      detail:
+          'หางยาวแข็ง ทำหน้าที่ถ่วงสมดุลน้ำหนักลำตัวและช่วยเปลี่ยนทิศทางขณะวิ่ง',
+      left: 0.70,
+      top: 0.40,
+    ),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final selected = _selected != null
+        ? _parts.firstWhere((p) => p.number == _selected)
+        : null;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // ── รูปไดโนเสาร์ + markers ──
+        _GlassPanel(
+          padding: EdgeInsets.zero,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: AspectRatio(
+              aspectRatio: 16 / 9,
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final w = constraints.maxWidth;
+                  final h = constraints.maxHeight;
+                  return Stack(
+                    children: [
+                      // พื้นหลัง gradient
+                      Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              const Color(0xFF0D3B29),
+                              AppColors.deepForest.withValues(alpha: 0.95),
+                            ],
+                          ),
+                        ),
+                      ),
+                      // รูปไดโนเสาร์
+                      Positioned.fill(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: Image.asset(
+                            'assets/images/Siamraptor.png',
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ),
+                      // markers — ซ่อน/แสดงตาม _showMarkers
+                      AnimatedOpacity(
+                        duration: const Duration(milliseconds: 250),
+                        opacity: _showMarkers ? 1.0 : 0.0,
+                        child: IgnorePointer(
+                          ignoring: !_showMarkers,
+                          child: Stack(
+                            children: [
+                              for (final part in _parts)
+                                Positioned(
+                                  left: part.left * w - 14,
+                                  top: part.top * h - 14,
+                                  child: GestureDetector(
+                                    onTap: () => setState(() {
+                                      _selected = _selected == part.number
+                                          ? null
+                                          : part.number;
+                                    }),
+                                    child: AnimatedContainer(
+                                      duration:
+                                          const Duration(milliseconds: 200),
+                                      width: 28,
+                                      height: 28,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: _selected == part.number
+                                            ? _accentGreen
+                                            : Colors.black
+                                                .withValues(alpha: 0.65),
+                                        border: Border.all(
+                                          color: _selected == part.number
+                                              ? Colors.white
+                                              : _accentGreen.withValues(
+                                                  alpha: 0.8),
+                                          width: 1.5,
+                                        ),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: _accentGreen.withValues(
+                                                alpha: _selected == part.number
+                                                    ? 0.55
+                                                    : 0.25),
+                                            blurRadius: 8,
+                                            spreadRadius: 1,
+                                          ),
+                                        ],
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          '${part.number}',
+                                          style: TextStyle(
+                                            color: _selected == part.number
+                                                ? Colors.black
+                                                : _accentGreen,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w800,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
+
+        // ── ปุ่มซ่อน/แสดงหมายเลข ──
+        Align(
+          alignment: Alignment.centerRight,
+          child: Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: GestureDetector(
+              onTap: () => setState(() => _showMarkers = !_showMarkers),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: _showMarkers
+                      ? _accentGreen.withValues(alpha: 0.15)
+                      : Colors.white.withValues(alpha: 0.06),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: _showMarkers
+                        ? _accentGreen.withValues(alpha: 0.5)
+                        : Colors.white.withValues(alpha: 0.15),
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      _showMarkers
+                          ? Icons.label_rounded
+                          : Icons.label_off_rounded,
+                      size: 14,
+                      color: _showMarkers ? _accentGreen : Colors.grey.shade400,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      _showMarkers ? 'ซ่อนหมายเลข' : 'แสดงหมายเลข',
+                      style: TextStyle(
+                        color:
+                            _showMarkers ? _accentGreen : Colors.grey.shade400,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+
+        const SizedBox(height: 12),
+
+        // ── กรอบ detail เมื่อ tap marker ──
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 220),
+          switchInCurve: Curves.easeOutCubic,
+          switchOutCurve: Curves.easeInCubic,
+          child: selected != null
+              ? _GlassPanel(
+                  key: ValueKey(selected.number),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 32,
+                        height: 32,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: _accentGreen,
+                          boxShadow: [
+                            BoxShadow(
+                              color: _accentGreen.withValues(alpha: 0.4),
+                              blurRadius: 8,
+                            ),
+                          ],
+                        ),
+                        child: Center(
+                          child: Text(
+                            '${selected.number}',
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              selected.label,
+                              style: const TextStyle(
+                                color: AppColors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              selected.detail,
+                              style: TextStyle(
+                                color: Colors.grey.shade400,
+                                fontSize: 12,
+                                height: 1.5,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : const SizedBox.shrink(),
+        ),
+
+        const SizedBox(height: 8),
+
+        // ── รายการส่วนทั้งหมด (legend) — tap เพื่อเลือก ──
+        for (final part in _parts)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: GestureDetector(
+              onTap: () => setState(() {
+                _selected = _selected == part.number ? null : part.number;
+              }),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                decoration: BoxDecoration(
+                  color: _selected == part.number
+                      ? _accentGreen.withValues(alpha: 0.10)
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: _selected == part.number
+                        ? _accentGreen.withValues(alpha: 0.45)
+                        : Colors.transparent,
+                  ),
+                ),
+                child: _GlassPanel(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 26,
+                        height: 26,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: _selected == part.number
+                              ? _accentGreen
+                              : _accentGreen.withValues(alpha: 0.12),
+                          border: Border.all(
+                              color: _accentGreen.withValues(alpha: 0.55)),
+                        ),
+                        child: Center(
+                          child: Text(
+                            '${part.number}',
+                            style: TextStyle(
+                              color: _selected == part.number
+                                  ? Colors.black
+                                  : _accentGreen,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          part.label,
+                          style: TextStyle(
+                            color: _selected == part.number
+                                ? AppColors.white
+                                : Colors.grey.shade300,
+                            fontSize: 13,
+                            fontWeight: _selected == part.number
+                                ? FontWeight.w700
+                                : FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      Icon(
+                        _selected == part.number
+                            ? Icons.keyboard_arrow_up_rounded
+                            : Icons.keyboard_arrow_down_rounded,
+                        size: 18,
+                        color: _selected == part.number
+                            ? _accentGreen
+                            : Colors.grey.shade600,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+        Padding(
+          padding: const EdgeInsets.only(top: 4),
+          child: Text(
+            '* แตะหมายเลขบนรูปหรือในรายการเพื่อดูรายละเอียด (ข้อมูลจำลอง)',
+            style: TextStyle(color: Colors.grey.shade600, fontSize: 11),
+          ),
+        ),
+        const SizedBox(height: 22),
+        const _FossilGallery(),
+      ],
     );
   }
 }

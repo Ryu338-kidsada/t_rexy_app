@@ -7,36 +7,36 @@ import '../widgets/custom_textfield.dart';
 import '../widgets/gradient_button.dart';
 import 'home_screen.dart';
 import 'signup_screen.dart';
- 
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
- 
+
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
- 
+
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
- 
+
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
- 
+
   Future<void> _handleSignIn() async {
     if (!_formKey.currentState!.validate()) return;
- 
+
     final authProvider = context.read<AuthProvider>();
     final success = await authProvider.signIn(
       email: _emailController.text,
       password: _passwordController.text,
     );
- 
+
     if (success && mounted) {
       Navigator.pushReplacement(
         context,
@@ -44,21 +44,22 @@ class _LoginScreenState extends State<LoginScreen> {
       );
     }
   }
- 
+
   void _handleSocialLoginTapped(String provider) {
     // TODO: ยังไม่ได้ทำ Google/Facebook login จริง (ตามแผนไว้ค่อยเพิ่มทีหลัง)
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('เข้าสู่ระบบด้วย $provider เร็วๆ นี้')),
     );
   }
- 
+
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
     final screenHeight = MediaQuery.of(context).size.height;
     final isKeyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
     // สัดส่วน % ของจอ แทนตัวเลขตายตัว + หดเมื่อคีย์บอร์ดเปิด
-    final topSectionHeight = isKeyboardOpen ? screenHeight * 0.12 : screenHeight * 0.32;
+    final topSectionHeight =
+        isKeyboardOpen ? screenHeight * 0.12 : screenHeight * 0.32;
 
     return Scaffold(
       backgroundColor: AppColors.deepForest,
@@ -73,50 +74,24 @@ class _LoginScreenState extends State<LoginScreen> {
                 Container(
                   decoration: const BoxDecoration(
                     image: DecorationImage(
-                      image: AssetImage('assets/images/bg_jungle.jpg'),
-                      fit: BoxFit.cover,
-                      colorFilter: ColorFilter.mode(
-                        Colors.black54,
-                        BlendMode.darken,
-                      )
-                    ),
+                        image: AssetImage('assets/images/bg_jungle.jpg'),
+                        fit: BoxFit.cover,
+                        colorFilter: ColorFilter.mode(
+                          Colors.black54,
+                          BlendMode.darken,
+                        )),
                   ),
                 ),
                 SafeArea(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         IconButton(
-                          icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.white, size: 18),
+                          icon: const Icon(Icons.arrow_back_ios_new,
+                              color: AppColors.white, size: 18),
                           onPressed: () => Navigator.pop(context),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(builder: (_) => const SignupScreen()),
-                            );
-                          },
-                          child: const Text.rich(
-                            TextSpan(
-                              children: [
-                                TextSpan(
-                                  text: "Don't have an account?  ",
-                                  style: TextStyle(color: AppColors.whiteFaded, fontSize: 12),
-                                ),
-                                TextSpan(
-                                  text: 'Get started',
-                                  style: TextStyle(
-                                    color: AppColors.white,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
                         ),
                       ],
                     ),
@@ -139,7 +114,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ],
             ),
           ),
- 
+
           // ส่วนล่าง: การ์ดขาวโค้งมนพร้อมฟอร์ม
           Expanded(
             child: Container(
@@ -161,16 +136,18 @@ class _LoginScreenState extends State<LoginScreen> {
                       const Text(
                         'Welcome Back',
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 26, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 6),
                       Text(
                         'Enter your details below',
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
+                        style: TextStyle(
+                            color: Colors.grey.shade600, fontSize: 14),
                       ),
                       const SizedBox(height: 28),
- 
+
                       CustomTextField(
                         label: 'Email Address',
                         controller: _emailController,
@@ -178,7 +155,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         validator: Validators.email,
                       ),
                       const SizedBox(height: 16),
- 
+
                       CustomTextField(
                         label: 'Password',
                         controller: _passwordController,
@@ -186,24 +163,28 @@ class _LoginScreenState extends State<LoginScreen> {
                         validator: Validators.password,
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                            _obscurePassword
+                                ? Icons.visibility_off_outlined
+                                : Icons.visibility_outlined,
                             color: Colors.grey,
                           ),
-                          onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                          onPressed: () => setState(
+                              () => _obscurePassword = !_obscurePassword),
                         ),
                       ),
                       const SizedBox(height: 8),
- 
+
                       if (authProvider.status == AuthStatus.error &&
                           authProvider.errorMessage != null)
                         Padding(
                           padding: const EdgeInsets.only(bottom: 8),
                           child: Text(
                             authProvider.errorMessage!,
-                            style: const TextStyle(color: Colors.redAccent, fontSize: 12),
+                            style: const TextStyle(
+                                color: Colors.redAccent, fontSize: 12),
                           ),
                         ),
- 
+
                       Align(
                         alignment: Alignment.centerRight,
                         child: TextButton(
@@ -212,19 +193,20 @@ class _LoginScreenState extends State<LoginScreen> {
                           },
                           child: Text(
                             'Forget your password?',
-                            style: TextStyle(color: Colors.grey.shade700, fontSize: 13),
+                            style: TextStyle(
+                                color: Colors.grey.shade700, fontSize: 13),
                           ),
                         ),
                       ),
                       const SizedBox(height: 8),
- 
+
                       GradientButton(
                         label: 'Sign in',
                         isLoading: authProvider.isLoading,
                         onPressed: _handleSignIn,
                       ),
                       const SizedBox(height: 28),
- 
+
                       Row(
                         children: [
                           Expanded(child: Divider(color: Colors.grey.shade300)),
@@ -232,43 +214,85 @@ class _LoginScreenState extends State<LoginScreen> {
                             padding: const EdgeInsets.symmetric(horizontal: 12),
                             child: Text(
                               'Or sign in with',
-                              style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+                              style: TextStyle(
+                                  color: Colors.grey.shade600, fontSize: 12),
                             ),
                           ),
                           Expanded(child: Divider(color: Colors.grey.shade300)),
                         ],
                       ),
                       const SizedBox(height: 20),
- 
+
                       Row(
                         children: [
                           Expanded(
                             child: OutlinedButton.icon(
-                              onPressed: () => _handleSocialLoginTapped('Google'),
-                              icon: const Icon(Icons.g_mobiledata, size: 24, color: Colors.red),
-                              label: const Text('Google', style: TextStyle(color: Colors.black87)),
+                              onPressed: () =>
+                                  _handleSocialLoginTapped('Google'),
+                              icon: const Icon(Icons.g_mobiledata,
+                                  size: 24, color: Colors.red),
+                              label: const Text('Google',
+                                  style: TextStyle(color: Colors.black87)),
                               style: OutlinedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(vertical: 14),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 14),
                                 side: BorderSide(color: Colors.grey.shade300),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12)),
                               ),
                             ),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: OutlinedButton.icon(
-                              onPressed: () => _handleSocialLoginTapped('Facebook'),
-                              icon: const Icon(Icons.facebook, size: 22, color: Colors.blue),
-                              label: const Text('Facebook', style: TextStyle(color: Colors.black87)),
+                              onPressed: () =>
+                                  _handleSocialLoginTapped('Facebook'),
+                              icon: const Icon(Icons.facebook,
+                                  size: 22, color: Colors.blue),
+                              label: const Text('Facebook',
+                                  style: TextStyle(color: Colors.black87)),
                               style: OutlinedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(vertical: 14),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 14),
                                 side: BorderSide(color: Colors.grey.shade300),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12)),
                               ),
                             ),
                           ),
                         ],
                       ),
+                      const SizedBox(height: 24),
+
+                      // ลิงก์สมัครสมาชิก — ย้ายมาไว้ล่างสุดตรงกลาง
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Don't have an account? ",
+                            style: TextStyle(
+                                color: Colors.grey.shade600, fontSize: 14),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => const SignupScreen()),
+                              );
+                            },
+                            child: const Text(
+                              'Get started',
+                              style: TextStyle(
+                                color: AppColors.primaryGreen,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
                     ],
                   ),
                 ),
