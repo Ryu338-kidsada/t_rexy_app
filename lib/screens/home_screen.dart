@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../providers/auth_provider.dart';
 import '../utils/app_colors.dart';
@@ -13,6 +14,7 @@ const _accentGreen = Color(0xFF6FCF3C);
 const _accentGreenSoft = Color(0xFFB6E388);
 const _surfaceDark = Color(0xCC0D2B1D);
 const _surfaceCard = Color(0x990D3B24);
+final _demoStoreUrl = Uri.parse('https://example.com/trexy-shop');
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -134,7 +136,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: _StatCard(
                             icon: Icons.straighten_rounded,
                             label: 'ความยาว',
-                            value: '10 เมตร',
+                            value: '7.9 เมตร',
                           ),
                         ),
                         SizedBox(width: 10),
@@ -631,15 +633,15 @@ class _SouvenirBanner extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            Image.asset('assets/images/bg_jungle.jpg', fit: BoxFit.cover),
+            Image.asset('assets/images/demo/dinobanner.jpg', fit: BoxFit.cover),
             DecoratedBox(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.centerLeft,
                   end: Alignment.centerRight,
                   colors: [
-                    AppColors.deepForest.withValues(alpha: 0.94),
-                    AppColors.deepForest.withValues(alpha: 0.54),
+                    AppColors.deepForest.withValues(alpha: 0.50),
+                    AppColors.deepForest.withValues(alpha: 0.10),
                   ],
                 ),
               ),
@@ -686,21 +688,21 @@ class _SouvenirCatalog extends StatelessWidget {
       name: 'เสื้อยืด Siamraptor',
       description: 'เสื้อคอตตอนลายสยามแรปเตอร์ สำหรับนักสำรวจตัวน้อย',
       price: '฿ 390',
-      assetPath: 'assets/images/raptor.png',
+      assetPath: 'assets/images/demo/demo.jpg',
       badge: 'แนะนำ',
     ),
     _SouvenirProduct(
       name: 'โปสเตอร์นักล่าแห่งโคราช',
       description: 'โปสเตอร์ภาพประกอบ Siamraptor สำหรับตกแต่งห้อง',
       price: '฿ 149',
-      assetPath: 'assets/images/Siamraptor.png',
+      assetPath: 'assets/images/demo/poster.jpg',
       badge: 'สินค้าใหม่',
     ),
     _SouvenirProduct(
       name: 'เข็มกลัด T-REXY',
       description: 'เข็มกลัดโลโก้ T-REXY รุ่นสะสม จำนวนจำกัด',
       price: '฿ 99',
-      assetPath: 'assets/images/logo_trexy.png',
+      assetPath: 'assets/images/demo/images.jpg',
     ),
   ];
 
@@ -744,6 +746,19 @@ class _SouvenirProductCard extends StatelessWidget {
   final _SouvenirProduct product;
 
   const _SouvenirProductCard({required this.product});
+
+  Future<void> _contactStore(BuildContext context) async {
+    final opened = await launchUrl(
+      _demoStoreUrl,
+      mode: LaunchMode.externalApplication,
+    );
+
+    if (!opened && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('ไม่สามารถเปิดหน้าร้านค้าได้')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -823,11 +838,7 @@ class _SouvenirProductCard extends StatelessWidget {
                     SizedBox(
                       height: 32,
                       child: FilledButton.icon(
-                        onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('เพิ่ม ${product.name} ลงตะกร้าแล้ว')),
-                          );
-                        },
+                        onPressed: () => _contactStore(context),
                         style: FilledButton.styleFrom(
                           backgroundColor: _accentGreen,
                           foregroundColor: AppColors.deepForest,
@@ -837,8 +848,8 @@ class _SouvenirProductCard extends StatelessWidget {
                             fontWeight: FontWeight.w700,
                           ),
                         ),
-                        icon: const Icon(Icons.add_shopping_cart_rounded, size: 15),
-                        label: const Text('ใส่ตะกร้า'),
+                        icon: const Icon(Icons.arrow_forward_rounded, size: 15),
+                        label: const Text('ติดต่อร้านค้า'),
                       ),
                     ),
                   ],
