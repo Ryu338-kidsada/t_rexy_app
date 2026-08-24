@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
 import 'package:provider/provider.dart';
 
@@ -470,17 +471,384 @@ class _DeepDiveTabBody extends StatelessWidget {
       case 2:
         return const _AnatomyPanel();
       case 3:
-        return const _InfoPanel(
+        return const _MorePanel();
+      default:
+        return const _StoryPanel();
+    }
+  }
+}
+
+class _MorePanel extends StatelessWidget {
+  const _MorePanel();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _InfoPanel(
           icon: Icons.info_outline_rounded,
           title: 'เพิ่มเติม',
           body:
               'ตั้งชื่อวิทยาศาสตร์ว่า Siamraptor suwati โดย Chokchaloemwong และคณะ '
               'ซากถูกพบในกลุ่มหินโคราช จังหวัดนครราชสีมา '
               'ถือเป็นหลักฐานสำคัญของไดโนเสาร์นักล่าขนาดใหญ่ในเอเชียตะวันออกเฉียงใต้',
-        );
-      default:
-        return const _StoryPanel();
-    }
+        ),
+        SizedBox(height: 28),
+        _SectionTitle(
+          title: 'ผลิตภัณฑ์ของที่ระลึก',
+          subtitle: 'เลือกเก็บความทรงจำจากโลกของ Siamraptor',
+        ),
+        SizedBox(height: 14),
+        _SouvenirBanner(),
+        SizedBox(height: 16),
+        _SouvenirCatalog(),
+        SizedBox(height: 30),
+        _SectionTitle(
+          title: 'นักพัฒนา',
+          subtitle: 'ติดตามผลงานและติดต่อทีมพัฒนา T-REXY',
+        ),
+        SizedBox(height: 14),
+        _DeveloperContactPanel(),
+      ],
+    );
+  }
+}
+
+class _DeveloperContactPanel extends StatelessWidget {
+  const _DeveloperContactPanel();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: _surfaceCard,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: _accentGreen.withValues(alpha: 0.32)),
+      ),
+      child: Column(
+        children: const [
+          _DeveloperContactTile(
+            icon: Icons.camera_alt_outlined,
+            title: 'Instagram',
+            contact: '@ryu338_kidsada',
+            iconColor: Color(0xFFE66A8D),
+          ),
+          Divider(height: 1, color: Colors.white12),
+          _DeveloperContactTile(
+            icon: Icons.code_rounded,
+            title: 'GitHub',
+            contact: 'github.com/Ryu338-kidsada/t_rexy_app',
+            iconColor: _accentGreenSoft,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DeveloperContactTile extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String contact;
+  final Color iconColor;
+
+  const _DeveloperContactTile({
+    required this.icon,
+    required this.title,
+    required this.contact,
+    required this.iconColor,
+  });
+
+  Future<void> _copyContact(BuildContext context) async {
+    await Clipboard.setData(ClipboardData(text: contact));
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('คัดลอกข้อมูล $title แล้ว')),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () => _copyContact(context),
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+          child: Row(
+            children: [
+              Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  color: iconColor.withValues(alpha: 0.14),
+                  borderRadius: BorderRadius.circular(11),
+                ),
+                child: Icon(icon, color: iconColor, size: 20),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        color: AppColors.white,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      contact,
+                      style: TextStyle(color: Colors.grey.shade400, fontSize: 11),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(Icons.copy_rounded, color: Colors.grey.shade500, size: 18),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SouvenirBanner extends StatelessWidget {
+  const _SouvenirBanner();
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(16),
+      child: SizedBox(
+        width: double.infinity,
+        height: 150,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Image.asset('assets/images/bg_jungle.jpg', fit: BoxFit.cover),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: [
+                    AppColors.deepForest.withValues(alpha: 0.94),
+                    AppColors.deepForest.withValues(alpha: 0.54),
+                  ],
+                ),
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.all(18),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text(
+                    'T-REXY COLLECTION',
+                    style: TextStyle(
+                      color: _accentGreenSoft,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 1.4,
+                    ),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    'พกโลกยุคดึกดำบรรพ์ไปกับคุณ',
+                    style: TextStyle(
+                      color: AppColors.white,
+                      fontSize: 19,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SouvenirCatalog extends StatelessWidget {
+  const _SouvenirCatalog();
+
+  static const _products = [
+    _SouvenirProduct(
+      name: 'เสื้อยืด Siamraptor',
+      description: 'เสื้อคอตตอนลายสยามแรปเตอร์ สำหรับนักสำรวจตัวน้อย',
+      price: '฿ 390',
+      assetPath: 'assets/images/raptor.png',
+      badge: 'แนะนำ',
+    ),
+    _SouvenirProduct(
+      name: 'โปสเตอร์นักล่าแห่งโคราช',
+      description: 'โปสเตอร์ภาพประกอบ Siamraptor สำหรับตกแต่งห้อง',
+      price: '฿ 149',
+      assetPath: 'assets/images/Siamraptor.png',
+      badge: 'สินค้าใหม่',
+    ),
+    _SouvenirProduct(
+      name: 'เข็มกลัด T-REXY',
+      description: 'เข็มกลัดโลโก้ T-REXY รุ่นสะสม จำนวนจำกัด',
+      price: '฿ 99',
+      assetPath: 'assets/images/logo_trexy.png',
+    ),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        ..._products.map(
+          (product) => Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: _SouvenirProductCard(product: product),
+          ),
+        ),
+        Text(
+          'สินค้าเป็นตัวอย่างเพื่อการศึกษา ยังไม่รองรับการสั่งซื้อจริง',
+          textAlign: TextAlign.center,
+          style: TextStyle(color: Colors.grey.shade500, fontSize: 11),
+        ),
+      ],
+    );
+  }
+}
+
+class _SouvenirProduct {
+  final String name;
+  final String description;
+  final String price;
+  final String assetPath;
+  final String? badge;
+
+  const _SouvenirProduct({
+    required this.name,
+    required this.description,
+    required this.price,
+    required this.assetPath,
+    this.badge,
+  });
+}
+
+class _SouvenirProductCard extends StatelessWidget {
+  final _SouvenirProduct product;
+
+  const _SouvenirProductCard({required this.product});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: _surfaceCard,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: _accentGreen.withValues(alpha: 0.32)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 100,
+            height: 100,
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Image.asset(product.assetPath, fit: BoxFit.contain),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (product.badge != null)
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 5),
+                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: _accentGreen.withValues(alpha: 0.16),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      product.badge!,
+                      style: const TextStyle(
+                        color: _accentGreenSoft,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                Text(
+                  product.name,
+                  style: const TextStyle(
+                    color: AppColors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  product.description,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: Colors.grey.shade400,
+                    fontSize: 11,
+                    height: 1.35,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      product.price,
+                      style: const TextStyle(
+                        color: _accentGreenSoft,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 32,
+                      child: FilledButton.icon(
+                        onPressed: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('เพิ่ม ${product.name} ลงตะกร้าแล้ว')),
+                          );
+                        },
+                        style: FilledButton.styleFrom(
+                          backgroundColor: _accentGreen,
+                          foregroundColor: AppColors.deepForest,
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          textStyle: const TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        icon: const Icon(Icons.add_shopping_cart_rounded, size: 15),
+                        label: const Text('ใส่ตะกร้า'),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -501,14 +869,14 @@ class _StoryPanel extends StatelessWidget {
               'ฟอสซิลที่พบช่วยเล่าเรื่องวิวัฒนาการของวงศ์นักล่าขนาดใหญ่ในภูมิภาคนี้',
         ),
         SizedBox(height: 22),
-        _DiscoveryPanel(),
-        SizedBox(height: 28),
         _SectionTitle(
           title: 'พฤติกรรม',
           subtitle: 'รูปแบบการล่าและชนิดอาหาร (ข้อมูลจำลอง)',
         ),
         SizedBox(height: 14),
         _BehaviorPanel(),
+        SizedBox(height: 28),
+        _DiscoveryPanel(),
         SizedBox(height: 28),
         _SectionTitle(
           title: 'โลกที่มันเคยเดิน',
@@ -530,7 +898,7 @@ class _DiscoveryPanel extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _SmallHeading(
-          title: 'การขุดค้นพบครั้งแรก',
+          title: 'การขุดค้นพบฟอสซิล',
           subtitle: 'แหล่งขุดค้นและบริบทของการพบซากครั้งแรก',
         ),
         SizedBox(height: 12),
@@ -629,13 +997,15 @@ class _SmallHeading extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              width: 8,
-              height: 8,
+              width: 4,
+              height: 42,
+              margin: const EdgeInsets.only(top: 1),
               decoration: BoxDecoration(
                 color: _accentGreen,
-                shape: BoxShape.circle,
+                borderRadius: BorderRadius.circular(4),
                 boxShadow: [
                   BoxShadow(
                     color: _accentGreen.withValues(alpha: 0.45),
@@ -644,28 +1014,32 @@ class _SmallHeading extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(width: 8),
-            Text(
-              title,
-              style: const TextStyle(
-                color: AppColors.white,
-                fontSize: 15,
-                fontWeight: FontWeight.w700,
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      color: AppColors.white,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      color: Colors.grey.shade400,
+                      fontSize: 12,
+                      height: 1.4,
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
-        ),
-        const SizedBox(height: 4),
-        Padding(
-          padding: const EdgeInsets.only(left: 16),
-          child: Text(
-            subtitle,
-            style: TextStyle(
-              color: Colors.grey.shade400,
-              fontSize: 12,
-              height: 1.4,
-            ),
-          ),
         ),
       ],
     );
