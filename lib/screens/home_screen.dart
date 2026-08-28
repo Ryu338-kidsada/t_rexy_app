@@ -9,6 +9,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../providers/auth_provider.dart';
 import '../utils/app_colors.dart';
 import 'get_started_screen.dart';
+import 'package:video_player/video_player.dart';
 
 const _accentGreen = Color(0xFF6FCF3C);
 const _accentGreenSoft = Color(0xFFB6E388);
@@ -531,17 +532,21 @@ class _DeveloperContactPanel extends StatelessWidget {
       child: Column(
         children: const [
           _DeveloperContactTile(
-            icon: Icons.camera_alt_outlined,
+            imagePath: 'assets/images/contact_icons/Instagram_icon.png',
             title: 'Instagram',
             contact: '@ryu338_kidsada',
-            iconColor: Color(0xFFE66A8D),
           ),
           Divider(height: 1, color: Colors.white12),
           _DeveloperContactTile(
-            icon: Icons.code_rounded,
+            imagePath: 'assets/images/contact_icons/github_icon.png',
             title: 'GitHub',
             contact: 'github.com/Ryu338-kidsada/t_rexy_app',
-            iconColor: _accentGreenSoft,
+          ),
+          Divider(height: 1, color: Colors.white12),
+          _DeveloperContactTile(
+            imagePath: 'assets/images/contact_icons/discord_icon.png',
+            title: 'Discord',
+            contact: 'ryu338#6660',
           ),
         ],
       ),
@@ -550,16 +555,14 @@ class _DeveloperContactPanel extends StatelessWidget {
 }
 
 class _DeveloperContactTile extends StatelessWidget {
-  final IconData icon;
+  final String imagePath;
   final String title;
   final String contact;
-  final Color iconColor;
 
   const _DeveloperContactTile({
-    required this.icon,
+    required this.imagePath,
     required this.title,
     required this.contact,
-    required this.iconColor,
   });
 
   Future<void> _copyContact(BuildContext context) async {
@@ -584,11 +587,20 @@ class _DeveloperContactTile extends StatelessWidget {
               Container(
                 width: 38,
                 height: 38,
+                clipBehavior: Clip.antiAlias,
                 decoration: BoxDecoration(
-                  color: iconColor.withValues(alpha: 0.14),
+                  color: Colors.white.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(11),
                 ),
-                child: Icon(icon, color: iconColor, size: 20),
+                child: Image.asset(
+                  imagePath,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => Icon(
+                    Icons.image_outlined,
+                    color: Colors.grey.shade500,
+                    size: 18,
+                  ),
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -606,7 +618,8 @@ class _DeveloperContactTile extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       contact,
-                      style: TextStyle(color: Colors.grey.shade400, fontSize: 11),
+                      style:
+                          TextStyle(color: Colors.grey.shade400, fontSize: 11),
                     ),
                   ],
                 ),
@@ -790,7 +803,8 @@ class _SouvenirProductCard extends StatelessWidget {
                 if (product.badge != null)
                   Container(
                     margin: const EdgeInsets.only(bottom: 5),
-                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                     decoration: BoxDecoration(
                       color: _accentGreen.withValues(alpha: 0.16),
                       borderRadius: BorderRadius.circular(20),
@@ -895,6 +909,178 @@ class _StoryPanel extends StatelessWidget {
         ),
         SizedBox(height: 14),
         _HabitatMapCard(),
+        SizedBox(height: 28),
+        _MuseumGallery(),
+      ],
+    );
+  }
+}
+
+// ─── พิพิธภัณฑ์ไดโนเสาร์ ─────────────────────────────────────────────────
+
+class _MuseumSlide {
+  final String assetPath;
+  final String location;
+
+  const _MuseumSlide({required this.assetPath, required this.location});
+}
+
+class _MuseumGallery extends StatefulWidget {
+  const _MuseumGallery();
+
+  @override
+  State<_MuseumGallery> createState() => _MuseumGalleryState();
+}
+
+class _MuseumGalleryState extends State<_MuseumGallery> {
+  final _pageController = PageController();
+  int _currentPage = 0;
+
+  static const _slides = [
+    _MuseumSlide(
+      assetPath: 'assets/images/museums/museum_korat.jpg',
+      location: 'พิพิธภัณฑ์ไม้กลายเป็นหินฯ · นครราชสีมา',
+    ),
+    _MuseumSlide(
+      assetPath: 'assets/images/museums/museum_sirindhorn.jpg',
+      location: 'พิพิธภัณฑ์สิรินธร · กาฬสินธุ์',
+    ),
+    _MuseumSlide(
+      assetPath: 'assets/images/museums/museum_mahasarakham.jpg',
+      location: 'ศูนย์วิจัยบรรพชีวินวิทยา · มหาสารคาม',
+    ),
+  ];
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const _SmallHeading(
+          title: 'พิพิธภัณฑ์ไดโนเสาร์',
+          subtitle: 'สถานที่เรียนรู้และชมหลักฐานที่เกี่ยวข้องกับ Siamraptor',
+        ),
+        const SizedBox(height: 12),
+
+        // การ์ดเดียว รวม slider + คำอธิบาย
+        _GlassPanel(
+          padding: EdgeInsets.zero,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Image slider
+              ClipRRect(
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(16)),
+                child: AspectRatio(
+                  aspectRatio: 16 / 9,
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      PageView.builder(
+                        controller: _pageController,
+                        itemCount: _slides.length,
+                        onPageChanged: (index) =>
+                            setState(() => _currentPage = index),
+                        itemBuilder: (context, index) {
+                          final slide = _slides[index];
+                          return ColoredBox(
+                            color: const Color(0xFF0A1F16),
+                            child: Image.asset(
+                              slide.assetPath,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) =>
+                                  const _FossilPlaceholder(
+                                      label: 'รอใส่ภาพพิพิธภัณฑ์'),
+                            ),
+                          );
+                        },
+                      ),
+
+                      // tag สถานที่ เปลี่ยนตามภาพที่เลื่อนถึง
+                      Positioned(
+                        top: 10,
+                        left: 10,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withValues(alpha: 0.5),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                                color: _accentGreen.withValues(alpha: 0.4)),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.location_on_rounded,
+                                  color: _accentGreenSoft, size: 12),
+                              const SizedBox(width: 4),
+                              Text(
+                                _slides[_currentPage].location,
+                                style: const TextStyle(
+                                  color: _accentGreenSoft,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                      // จุดบอกตำแหน่งสไลด์ (dots indicator)
+                      Positioned(
+                        bottom: 10,
+                        left: 0,
+                        right: 0,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: List.generate(_slides.length, (index) {
+                            final selected = index == _currentPage;
+                            return AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              margin: const EdgeInsets.symmetric(horizontal: 3),
+                              width: selected ? 18 : 6,
+                              height: 6,
+                              decoration: BoxDecoration(
+                                color: selected
+                                    ? _accentGreen
+                                    : Colors.white.withValues(alpha: 0.4),
+                                borderRadius: BorderRadius.circular(3),
+                              ),
+                            );
+                          }),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              // คำอธิบายรวม กล่องเดียวกันกับ slider
+              const Padding(
+                padding: EdgeInsets.fromLTRB(14, 12, 14, 14),
+                child: Text(
+                  'พิพิธภัณฑ์ไดโนเสาร์ในภาคอีสานของไทยเป็นแหล่งเรียนรู้สำคัญที่จัดแสดงซากดึกดำบรรพ์ '
+                  'จากกลุ่มหินโคราช ซึ่งเป็นบริเวณที่ค้นพบซาก Siamraptor suwati '
+                  'นักท่องเที่ยวและนักวิจัยสามารถศึกษาโครงกระดูก ฟอสซิล และเรื่องราววิวัฒนาการ '
+                  'ของไดโนเสาร์นักล่าขนาดใหญ่ชนิดนี้ได้อย่างใกล้ชิด (ข้อมูลจำลอง)',
+                  style: TextStyle(
+                      color: Color.fromARGB(255, 189, 189, 189),
+                      fontSize: 13,
+                      height: 1.55),
+                ),
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -955,8 +1141,7 @@ class _FossilGallery extends StatelessWidget {
       assetPath: 'assets/images/fossil_jaw.jpg',
       part: 'ขากรรไกรบน',
       title: 'กระดูกขากรรไกร',
-      description:
-          'ฟอสซิลขากรรไกรบนช่วยยืนยันลักษณะฟันหยักของนักล่า '
+      description: 'ฟอสซิลขากรรไกรบนช่วยยืนยันลักษณะฟันหยักของนักล่า '
           'และเป็นหลักฐานสำคัญที่ใช้ตั้งชื่อ Siamraptor suwati',
     ),
     _FossilItem(
@@ -983,7 +1168,7 @@ class _FossilGallery extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const _SmallHeading(
-          title: 'ภาพฟอสซิลและคำอธิบาย',
+          title: 'ภาพฟอสซิล',
           subtitle: 'หลักฐานซากดึกดำบรรพ์ที่ช่วยเล่าเรื่องของมัน',
         ),
         const SizedBox(height: 12),
@@ -2184,9 +2369,343 @@ class _AnatomyPanelState extends State<_AnatomyPanel> {
             style: TextStyle(color: Colors.grey.shade600, fontSize: 11),
           ),
         ),
-        const SizedBox(height: 22),
+        const SizedBox(height: 28),
+        const _ModelViewsPanel(),
+        const SizedBox(height: 28),
         const _FossilGallery(),
+        const SizedBox(height: 28),
+        const _MovementVideoPanel(),
       ],
+    );
+  }
+}
+
+// ─── แบบจำลอง (สลับมุมมอง หน้า/หลัง/ข้าง/บน/ล่าง) ──────────────────────────
+
+class _ModelView {
+  final String label;
+  final IconData icon;
+  final String assetPath;
+
+  const _ModelView({
+    required this.label,
+    required this.icon,
+    required this.assetPath,
+  });
+}
+
+class _ModelViewsPanel extends StatefulWidget {
+  const _ModelViewsPanel();
+
+  @override
+  State<_ModelViewsPanel> createState() => _ModelViewsPanelState();
+}
+
+class _ModelViewsPanelState extends State<_ModelViewsPanel> {
+  int _selectedView = 0;
+
+  static const _views = [
+    _ModelView(
+      label: 'ด้านหน้า',
+      icon: Icons.crop_portrait_rounded,
+      assetPath: 'assets/images/anatomy/view_front.jpg',
+    ),
+    _ModelView(
+      label: 'ด้านหลัง',
+      icon: Icons.flip_camera_android_rounded,
+      assetPath: 'assets/images/anatomy/view_back.jpg',
+    ),
+    _ModelView(
+      label: 'ด้านข้าง',
+      icon: Icons.view_agenda_outlined,
+      assetPath: 'assets/images/anatomy/view_side.jpg',
+    ),
+    _ModelView(
+      label: 'ด้านบน',
+      icon: Icons.arrow_upward_rounded,
+      assetPath: 'assets/images/anatomy/view_top.jpg',
+    ),
+    _ModelView(
+      label: 'ด้านล่าง',
+      icon: Icons.arrow_downward_rounded,
+      assetPath: 'assets/images/anatomy/view_bottom.jpg',
+    ),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final current = _views[_selectedView];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const _SmallHeading(
+          title: 'แบบจำลอง',
+          subtitle: 'สลับมุมมองเพื่อดูโครงสร้างร่างกายจากด้านต่างๆ',
+        ),
+        const SizedBox(height: 12),
+
+        // กรอบภาพ เปลี่ยนตามมุมที่เลือก
+        _GlassPanel(
+          padding: EdgeInsets.zero,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: AspectRatio(
+              aspectRatio: 16 / 9,
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 250),
+                switchInCurve: Curves.easeOutCubic,
+                switchOutCurve: Curves.easeInCubic,
+                child: Stack(
+                  key: ValueKey(_selectedView),
+                  fit: StackFit.expand,
+                  children: [
+                    ColoredBox(
+                      color: const Color(0xFF0A1F16),
+                      child: Image.asset(
+                        current.assetPath,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => _FossilPlaceholder(
+                          label: 'รอใส่ภาพมุม${current.label}',
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: 10,
+                      left: 10,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 5,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.5),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: _accentGreen.withValues(alpha: 0.4),
+                          ),
+                        ),
+                        child: Text(
+                          current.label,
+                          style: const TextStyle(
+                            color: _accentGreenSoft,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+
+        // แถบตัวเลือกมุมมอง (เลื่อนแนวนอนได้)
+        SizedBox(
+          height: 40,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: _views.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 8),
+            itemBuilder: (context, index) {
+              final view = _views[index];
+              final selected = index == _selectedView;
+              return GestureDetector(
+                onTap: () => setState(() => _selectedView = index),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 180),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: selected
+                        ? _accentGreen.withValues(alpha: 0.18)
+                        : Colors.white.withValues(alpha: 0.04),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: selected
+                          ? _accentGreen.withValues(alpha: 0.7)
+                          : Colors.white.withValues(alpha: 0.12),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        view.icon,
+                        size: 15,
+                        color:
+                            selected ? _accentGreenSoft : Colors.grey.shade400,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        view.label,
+                        style: TextStyle(
+                          color: selected
+                              ? _accentGreenSoft
+                              : Colors.grey.shade400,
+                          fontSize: 12,
+                          fontWeight:
+                              selected ? FontWeight.w700 : FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ─── วิดีโอจำลองการเคลื่อนไหว ────────────────────────────────────────────
+
+class _MovementVideoPanel extends StatefulWidget {
+  const _MovementVideoPanel();
+
+  @override
+  State<_MovementVideoPanel> createState() => _MovementVideoPanelState();
+}
+
+class _MovementVideoPanelState extends State<_MovementVideoPanel> {
+  static const _videoPath = 'assets/images/videos/video_siamraptor.mp4';
+
+  VideoPlayerController? _controller;
+  bool _isInitialized = false;
+  bool _hasError = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initVideo();
+  }
+
+  Future<void> _initVideo() async {
+    try {
+      final controller = VideoPlayerController.asset(_videoPath);
+      await controller.initialize();
+      controller.setLooping(true);
+      if (!mounted) {
+        controller.dispose();
+        return;
+      }
+      setState(() {
+        _controller = controller;
+        _isInitialized = true;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _hasError = true);
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller?.dispose();
+    super.dispose();
+  }
+
+  void _togglePlay() {
+    final controller = _controller;
+    if (controller == null) return;
+    setState(() {
+      controller.value.isPlaying ? controller.pause() : controller.play();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const _SmallHeading(
+          title: 'วิดีโอจำลองการเคลื่อนไหว',
+          subtitle: 'ชมการเดินและท่าทางจำลองในรูปแบบวิดีโอ',
+        ),
+        const SizedBox(height: 12),
+        _GlassPanel(
+          padding: EdgeInsets.zero,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: AspectRatio(
+              aspectRatio: 16 / 9,
+              child: _buildVideoArea(),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildVideoArea() {
+    if (_hasError) {
+      return const _FossilPlaceholder(label: 'รอวิดีโอจำลองการเคลื่อนไหว');
+    }
+
+    if (!_isInitialized || _controller == null) {
+      return ColoredBox(
+        color: const Color(0xFF0A1F16),
+        child: Center(
+          child: SizedBox(
+            width: 28,
+            height: 28,
+            child: CircularProgressIndicator(
+              strokeWidth: 2.5,
+              color: _accentGreen.withValues(alpha: 0.7),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return GestureDetector(
+      onTap: _togglePlay,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          VideoPlayer(_controller!),
+          ValueListenableBuilder(
+            valueListenable: _controller!,
+            builder: (context, value, child) {
+              return AnimatedOpacity(
+                duration: const Duration(milliseconds: 200),
+                opacity: value.isPlaying ? 0.0 : 1.0,
+                child: Container(
+                  color: Colors.black.withValues(alpha: 0.25),
+                  child: Center(
+                    child: Container(
+                      width: 52,
+                      height: 52,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: _accentGreen,
+                        boxShadow: [
+                          BoxShadow(
+                            color: _accentGreen.withValues(alpha: 0.4),
+                            blurRadius: 12,
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.play_arrow_rounded,
+                        color: Colors.black,
+                        size: 30,
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 }

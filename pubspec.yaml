@@ -20,6 +20,7 @@ dependencies:
   provider: ^6.1.2
   model_viewer_plus: ^1.10.0
   url_launcher: ^6.3.2
+  video_player: ^2.14.0
 
 dev_dependencies:
   flutter_test:
@@ -33,6 +34,9 @@ flutter:
     - assets/images/
     - assets/models/
     - assets/images/demo/
+    - assets/images/videos/
+    - assets/images/museums/
+    - assets/images/contact_icons/
 
   # เปิดใช้เมื่อได้รูปจาก Figma แล้ว
   # assets:
