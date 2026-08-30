@@ -47,7 +47,7 @@ class GetStartedScreen extends StatelessWidget {
                 const SizedBox(height: 20),
  
                 const Text(
-                  'T-REXY',
+                  'SIAM LAP',
                   style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.w300,

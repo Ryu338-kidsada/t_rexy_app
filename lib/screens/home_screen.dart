@@ -10,6 +10,7 @@ import '../providers/auth_provider.dart';
 import '../utils/app_colors.dart';
 import 'get_started_screen.dart';
 import 'package:video_player/video_player.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 const _accentGreen = Color(0xFF6FCF3C);
 const _accentGreenSoft = Color(0xFFB6E388);
@@ -24,10 +25,93 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
+class AudioPlayerController extends ChangeNotifier {
+  final AudioPlayer _player = AudioPlayer();
+
+  String? _currentPath;
+  String _currentLabel = '';
+  bool _isPlaying = false;
+  bool _hasError = false;
+
+  String? get currentPath => _currentPath;
+  String get currentLabel => _currentLabel;
+  bool get isPlaying => _isPlaying;
+  bool get hasError => _hasError;
+  bool get isActive => _currentPath != null;
+
+  AudioPlayerController() {
+    _player.onPlayerComplete.listen((_) {
+      _isPlaying = false;
+      notifyListeners();
+    });
+  }
+
+  Future<void> playOrToggle(String audioPath, {String label = ''}) async {
+    try {
+      if (_currentPath == audioPath) {
+        if (_isPlaying) {
+          await _player.pause();
+          _isPlaying = false;
+        } else {
+          await _player.resume();
+          _isPlaying = true;
+        }
+      } else {
+        _currentPath = audioPath;
+        _currentLabel = label;
+        _hasError = false;
+        final path = audioPath.replaceFirst('assets/', '');
+        await _player.play(AssetSource(path));
+        _isPlaying = true;
+      }
+      notifyListeners();
+    } catch (_) {
+      _hasError = true;
+      _isPlaying = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> pause() async {
+    await _player.pause();
+    _isPlaying = false;
+    notifyListeners();
+  }
+
+  Future<void> resume() async {
+    if (_currentPath == null) return;
+    await _player.resume();
+    _isPlaying = true;
+    notifyListeners();
+  }
+
+  Future<void> stop() async {
+    await _player.stop();
+    _currentPath = null;
+    _isPlaying = false;
+    notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _player.dispose();
+    super.dispose();
+  }
+}
+
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedTab = 0;
+  final _audioController = AudioPlayerController();
+  final _sfxController = SfxController();
 
   static const _tabs = ['เรื่องราว', 'ไทม์ไลน์', 'กายวิภาค', 'เพิ่มเติม'];
+
+  @override
+  void dispose() {
+    _audioController.dispose();
+    _sfxController.dispose();
+    super.dispose();
+  }
 
   Future<void> _handleLogout(BuildContext context) async {
     await context.read<AuthProvider>().signOut();
@@ -44,175 +128,185 @@ class _HomeScreenState extends State<HomeScreen> {
     final authProvider = context.watch<AuthProvider>();
     final userName = authProvider.currentUser?.displayName ?? 'Guest';
 
-    return Scaffold(
-      backgroundColor: AppColors.deepForest,
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          Image.asset(
-            'assets/images/bg_jungle.jpg',
-            fit: BoxFit.cover,
-          ),
-          DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Colors.black.withValues(alpha: 0.55),
-                  AppColors.deepForest.withValues(alpha: 0.92),
-                  AppColors.deepForest,
+    return MultiProvider(
+      // ← เปลี่ยนจาก ChangeNotifierProvider ตัวเดียว
+      providers: [
+        ChangeNotifierProvider<AudioPlayerController>.value(
+            value: _audioController),
+        Provider<SfxController>.value(value: _sfxController),
+      ],
+      child: Scaffold(
+        backgroundColor: AppColors.deepForest,
+        body: Stack(
+          fit: StackFit.expand,
+          children: [
+            Image.asset(
+              'assets/images/bg_jungle.jpg',
+              fit: BoxFit.cover,
+            ),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black.withValues(alpha: 0.55),
+                    AppColors.deepForest.withValues(alpha: 0.92),
+                    AppColors.deepForest,
+                  ],
+                  stops: const [0.0, 0.45, 1.0],
+                ),
+              ),
+            ),
+            SafeArea(
+              child: CustomScrollView(
+                physics: const BouncingScrollPhysics(
+                  parent: AlwaysScrollableScrollPhysics(),
+                ),
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                      child: _HeaderSection(
+                        userName: userName,
+                        onLogout: () => _handleLogout(context),
+                      ),
+                    ),
+                  ),
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _CategoryBadge(label: 'RAPTOR'),
+                          const SizedBox(height: 10),
+                          const Text(
+                            'Siamraptor',
+                            style: TextStyle(
+                              color: AppColors.white,
+                              fontSize: 36,
+                              fontWeight: FontWeight.w800,
+                              height: 1.05,
+                              letterSpacing: -0.5,
+                            ),
+                          ),
+                          const Text(
+                            'suwatii',
+                            style: TextStyle(
+                              color: _accentGreenSoft,
+                              fontSize: 22,
+                              fontStyle: FontStyle.italic,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'สยามแรปเตอร์ สุวัจน์ติ · ตั้งชื่อโดย Chokchaloemwong',
+                            style: TextStyle(
+                              color: Colors.grey.shade400,
+                              fontSize: 12,
+                              height: 1.4,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SliverToBoxAdapter(
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
+                      child: _DinosaurMediaViewer(),
+                    ),
+                  ),
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                      child: Row(
+                        children: const [
+                          Expanded(
+                            child: _StatCard(
+                              icon: Icons.straighten_rounded,
+                              label: 'ความยาว',
+                              value: '7.9 เมตร',
+                            ),
+                          ),
+                          SizedBox(width: 10),
+                          Expanded(
+                            child: _StatCard(
+                              icon: Icons.scale_rounded,
+                              label: 'น้ำหนัก',
+                              value: '3-4 ตัน',
+                            ),
+                          ),
+                          SizedBox(width: 10),
+                          Expanded(
+                            child: _StatCard(
+                              icon: Icons.emoji_nature_rounded,
+                              label: 'ฟัน',
+                              value: '60 ซี่',
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 28, 20, 32),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const _SectionTitle(
+                            title: 'เจาะลึก Siam Raptor',
+                            subtitle:
+                                'ข้อมูลเชิงลึกเกี่ยวกับพฤติกรรม ลักษณะทางกายภาพ และวิวัฒนาการ',
+                            audioPath: 'assets/audio/voice_over2.wav',
+                          ),
+                          const SizedBox(height: 16),
+                          SizedBox(
+                            height: 44,
+                            child: ListView.separated(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: _tabs.length,
+                              separatorBuilder: (_, __) =>
+                                  const SizedBox(width: 4),
+                              itemBuilder: (context, index) {
+                                return _TabItem(
+                                  label: _tabs[index],
+                                  selected: _selectedTab == index,
+                                  onTap: () =>
+                                      setState(() => _selectedTab = index),
+                                );
+                              },
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Divider(
+                            color: _accentGreen.withValues(alpha: 0.35),
+                            thickness: 1,
+                            height: 1,
+                          ),
+                          const SizedBox(height: 14),
+                          AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 250),
+                            switchInCurve: Curves.easeOutCubic,
+                            switchOutCurve: Curves.easeInCubic,
+                            child: KeyedSubtree(
+                              key: ValueKey(_selectedTab),
+                              child: _DeepDiveTabBody(tabIndex: _selectedTab),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
-                stops: const [0.0, 0.45, 1.0],
               ),
             ),
-          ),
-          SafeArea(
-            child: CustomScrollView(
-              physics: const BouncingScrollPhysics(
-                parent: AlwaysScrollableScrollPhysics(),
-              ),
-              slivers: [
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                    child: _HeaderSection(
-                      userName: userName,
-                      onLogout: () => _handleLogout(context),
-                    ),
-                  ),
-                ),
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _CategoryBadge(label: 'RAPTOR'),
-                        const SizedBox(height: 10),
-                        const Text(
-                          'Siamraptor',
-                          style: TextStyle(
-                            color: AppColors.white,
-                            fontSize: 36,
-                            fontWeight: FontWeight.w800,
-                            height: 1.05,
-                            letterSpacing: -0.5,
-                          ),
-                        ),
-                        const Text(
-                          'suwatii',
-                          style: TextStyle(
-                            color: _accentGreenSoft,
-                            fontSize: 22,
-                            fontStyle: FontStyle.italic,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'สยามแรปเตอร์ สุวัธนี่ · ตั้งชื่อโดย Chokchaloemwong',
-                          style: TextStyle(
-                            color: Colors.grey.shade400,
-                            fontSize: 12,
-                            height: 1.4,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SliverToBoxAdapter(
-                  child: Padding(
-                    padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
-                    child: _DinosaurMediaViewer(),
-                  ),
-                ),
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                    child: Row(
-                      children: const [
-                        Expanded(
-                          child: _StatCard(
-                            icon: Icons.straighten_rounded,
-                            label: 'ความยาว',
-                            value: '7.9 เมตร',
-                          ),
-                        ),
-                        SizedBox(width: 10),
-                        Expanded(
-                          child: _StatCard(
-                            icon: Icons.scale_rounded,
-                            label: 'น้ำหนัก',
-                            value: '3-4 ตัน',
-                          ),
-                        ),
-                        SizedBox(width: 10),
-                        Expanded(
-                          child: _StatCard(
-                            icon: Icons.emoji_nature_rounded,
-                            label: 'ฟัน',
-                            value: '60 ซี่',
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 28, 20, 32),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const _SectionTitle(
-                          title: 'เจาะลึก Siam Raptor',
-                          subtitle:
-                              'ข้อมูลเชิงลึกเกี่ยวกับพฤติกรรม ลักษณะทางกายภาพ และวิวัฒนาการ',
-                        ),
-                        const SizedBox(height: 16),
-                        SizedBox(
-                          height: 44,
-                          child: ListView.separated(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: _tabs.length,
-                            separatorBuilder: (_, __) =>
-                                const SizedBox(width: 4),
-                            itemBuilder: (context, index) {
-                              return _TabItem(
-                                label: _tabs[index],
-                                selected: _selectedTab == index,
-                                onTap: () =>
-                                    setState(() => _selectedTab = index),
-                              );
-                            },
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        Divider(
-                          color: _accentGreen.withValues(alpha: 0.35),
-                          thickness: 1,
-                          height: 1,
-                        ),
-                        const SizedBox(height: 14),
-                        AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 250),
-                          switchInCurve: Curves.easeOutCubic,
-                          switchOutCurve: Curves.easeInCubic,
-                          child: KeyedSubtree(
-                            key: ValueKey(_selectedTab),
-                            child: _DeepDiveTabBody(tabIndex: _selectedTab),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+            const _MiniAudioPlayerBar(),
+          ],
+        ),
       ),
     );
   }
@@ -226,7 +320,7 @@ class _HeaderSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _GlassPanel(
+    return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       child: Row(
         children: [
@@ -268,7 +362,7 @@ class _HeaderSection extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 const Text(
-                  'Welcome to T-REX dinosure',
+                  'Welcome to SIAM LAP dinosure',
                   style: TextStyle(color: AppColors.whiteFaded, fontSize: 12),
                 ),
               ],
@@ -362,8 +456,13 @@ class _StatCard extends StatelessWidget {
 class _SectionTitle extends StatelessWidget {
   final String title;
   final String subtitle;
+  final String? audioPath;
 
-  const _SectionTitle({required this.title, required this.subtitle});
+  const _SectionTitle({
+    required this.title,
+    required this.subtitle,
+    this.audioPath,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -409,6 +508,11 @@ class _SectionTitle extends StatelessWidget {
             ],
           ),
         ),
+        if (audioPath != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 2),
+            child: _AudioPlayButton(audioPath: audioPath!, label: title),
+          ),
       ],
     );
   }
@@ -889,9 +993,10 @@ class _StoryPanel extends StatelessWidget {
           icon: Icons.menu_book_rounded,
           title: 'เรื่องราว',
           body:
-              'สยามแรปเตอร์ สุวัธนี่ คือไดโนเสาร์นักล่าที่เคยอาศัยในดินแดนไทยเมื่อกว่า 113 ล้านปีก่อน '
+              'สยามแรปเตอร์ สุวัจน์ติ คือไดโนเสาร์นักล่าที่เคยอาศัยในดินแดนไทยเมื่อกว่า 113 ล้านปีก่อน '
               'มันล่าเหยื่อในระบบนิเวศป่าชื้นและที่ราบน้ำท่วมถึงของยุคครีเทเชียสตอนต้น '
               'ฟอสซิลที่พบช่วยเล่าเรื่องวิวัฒนาการของวงศ์นักล่าขนาดใหญ่ในภูมิภาคนี้',
+          audioPath: 'assets/audio/voice_over.wav',
         ),
         SizedBox(height: 22),
         _SectionTitle(
@@ -1572,11 +1677,13 @@ class _InfoPanel extends StatelessWidget {
   final IconData icon;
   final String title;
   final String body;
+  final String? audioPath;
 
   const _InfoPanel({
     required this.icon,
     required this.title,
     required this.body,
+    this.audioPath,
   });
 
   @override
@@ -1599,13 +1706,21 @@ class _InfoPanel extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    color: AppColors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                  ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        title,
+                        style: const TextStyle(
+                          color: AppColors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                    if (audioPath != null)
+                      _AudioPlayButton(audioPath: audioPath!, label: title),
+                  ],
                 ),
                 const SizedBox(height: 6),
                 Text(
@@ -2408,27 +2523,17 @@ class _ModelViewsPanelState extends State<_ModelViewsPanel> {
     _ModelView(
       label: 'ด้านหน้า',
       icon: Icons.crop_portrait_rounded,
-      assetPath: 'assets/images/anatomy/view_front.jpg',
+      assetPath: 'assets/images/dino/dinosaur_model/front.png',
     ),
     _ModelView(
       label: 'ด้านหลัง',
       icon: Icons.flip_camera_android_rounded,
-      assetPath: 'assets/images/anatomy/view_back.jpg',
+      assetPath: 'assets/images/dino/dinosaur_model/behind.png',
     ),
     _ModelView(
       label: 'ด้านข้าง',
       icon: Icons.view_agenda_outlined,
-      assetPath: 'assets/images/anatomy/view_side.jpg',
-    ),
-    _ModelView(
-      label: 'ด้านบน',
-      icon: Icons.arrow_upward_rounded,
-      assetPath: 'assets/images/anatomy/view_top.jpg',
-    ),
-    _ModelView(
-      label: 'ด้านล่าง',
-      icon: Icons.arrow_downward_rounded,
-      assetPath: 'assets/images/anatomy/view_bottom.jpg',
+      assetPath: 'assets/images/dino/dinosaur_model/side.png',
     ),
   ];
 
@@ -2575,7 +2680,7 @@ class _MovementVideoPanel extends StatefulWidget {
 }
 
 class _MovementVideoPanelState extends State<_MovementVideoPanel> {
-  static const _videoPath = 'assets/images/videos/video_siamraptor.mp4';
+  static const _videoPath = 'assets/images/videos/siam_raptor.mp4';
 
   VideoPlayerController? _controller;
   bool _isInitialized = false;
@@ -2732,4 +2837,199 @@ class _GridPatternPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+// ─── ปุ่มลำโพงอ่านออกเสียง ───────────────────────────────────────────────
+
+/// ปุ่มเล่น/หยุดเสียง — ใช้ AudioPlayerController จาก Provider
+/// เพื่อให้ _MiniAudioPlayerBar รับรู้สถานะได้ถูกต้อง
+class _AudioPlayButton extends StatelessWidget {
+  final String audioPath;
+  final String? label;
+
+  const _AudioPlayButton({required this.audioPath, this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<AudioPlayerController>(
+      builder: (context, controller, _) {
+        final isPlaying =
+            controller.currentPath == audioPath && controller.isPlaying;
+        return GestureDetector(
+          onTap: () => controller.playOrToggle(audioPath, label: label ?? ''),
+          child: Container(
+            width: 30,
+            height: 30,
+            margin: const EdgeInsets.only(left: 8),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: isPlaying
+                  ? _accentGreen.withValues(alpha: 0.85)
+                  : Colors.white.withValues(alpha: 0.10),
+              border: Border.all(
+                color: isPlaying
+                    ? _accentGreen.withValues(alpha: 0.5)
+                    : Colors.white.withValues(alpha: 0.18),
+              ),
+            ),
+            child: Icon(
+              isPlaying ? Icons.pause_rounded : Icons.volume_up_rounded,
+              color: isPlaying ? Colors.black : Colors.grey.shade300,
+              size: 16,
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _MiniAudioPlayerBar extends StatelessWidget {
+  const _MiniAudioPlayerBar();
+
+  @override
+  Widget build(BuildContext context) {
+    final controller = context.watch<AudioPlayerController>();
+
+    return Positioned(
+      left: 0,
+      right: 0,
+      bottom: 0,
+      child: IgnorePointer(
+        ignoring: !controller.isActive,
+        child: AnimatedSlide(
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeOutCubic,
+          offset: controller.isActive ? Offset.zero : const Offset(0, 1),
+          child: AnimatedOpacity(
+            duration: const Duration(milliseconds: 200),
+            opacity: controller.isActive ? 1 : 0,
+            child: SafeArea(
+              top: false,
+              child: Container(
+                height: 60,
+                margin: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0D2B1D),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: _accentGreen.withValues(alpha: 0.35),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.35),
+                      blurRadius: 14,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 34,
+                      height: 34,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: _accentGreen.withValues(alpha: 0.16),
+                      ),
+                      child: const Icon(Icons.graphic_eq_rounded,
+                          color: _accentGreen, size: 18),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'กำลังฟังเสียงบรรยาย',
+                            style: TextStyle(
+                                color: Colors.grey.shade400, fontSize: 10),
+                          ),
+                          Text(
+                            controller.currentLabel.isEmpty
+                                ? 'เสียงบรรยาย'
+                                : controller.currentLabel,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              color: AppColors.white,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () => controller.isPlaying
+                          ? controller.pause()
+                          : controller.resume(),
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: _accentGreen,
+                        ),
+                        child: Icon(
+                          controller.isPlaying
+                              ? Icons.pause_rounded
+                              : Icons.play_arrow_rounded,
+                          color: Colors.black,
+                          size: 18,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    GestureDetector(
+                      onTap: controller.stop,
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white.withValues(alpha: 0.08),
+                        ),
+                        child: Icon(Icons.close_rounded,
+                            color: Colors.grey.shade300, size: 16),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class SfxController {
+  final AudioPlayer _player = AudioPlayer(playerId: 'sfx_player');
+
+  SfxController() {
+    _player.setReleaseMode(ReleaseMode.stop);
+  }
+
+  Future<void> playClick() async {
+    try {
+      await _player.stop();
+      await _player.play(AssetSource('audio/ui_pop_sound.mp3'), volume: 0.6);
+    } catch (_) {
+      // เงียบไว้ ไม่ให้เสียง error ไปรบกวน UX หลัก
+    }
+  }
+
+  void dispose() => _player.dispose();
+}
+
+VoidCallback? withSfx(BuildContext context, VoidCallback? callback) {
+  if (callback == null) return null;
+  return () {
+    context.read<SfxController>().playClick();
+    callback();
+  };
 }
