@@ -770,7 +770,7 @@ class _SouvenirBanner extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Text(
-                    'T-REXY COLLECTION',
+                    'SIAM LAP COLLECTION',
                     style: TextStyle(
                       color: _accentGreenSoft,
                       fontSize: 11,
@@ -1001,7 +1001,7 @@ class _StoryPanel extends StatelessWidget {
         SizedBox(height: 22),
         _SectionTitle(
           title: 'พฤติกรรม',
-          subtitle: 'รูปแบบการล่าและชนิดอาหาร (ข้อมูลจำลอง)',
+          subtitle: 'รูปแบบการล่าและชนิดอาหาร',
         ),
         SizedBox(height: 14),
         _BehaviorPanel(),
@@ -1206,7 +1206,7 @@ class _DiscoveryPanel extends StatelessWidget {
         SizedBox(height: 12),
         _FossilCard(
           item: _FossilItem(
-            assetPath: 'assets/images/discovery_first.jpg',
+            assetPath: 'assets/images/museums/discovery2.png',
             part: 'นครราชสีมา',
             title: 'เหมืองหินในกลุ่มหินโคราช',
             description:
@@ -1243,14 +1243,14 @@ class _FossilGallery extends StatelessWidget {
 
   static const _items = [
     _FossilItem(
-      assetPath: 'assets/images/fossil_jaw.jpg',
+      assetPath: 'assets/images/museums/bone4.jpg',
       part: 'ขากรรไกรบน',
       title: 'กระดูกขากรรไกร',
       description: 'ฟอสซิลขากรรไกรบนช่วยยืนยันลักษณะฟันหยักของนักล่า '
           'และเป็นหลักฐานสำคัญที่ใช้ตั้งชื่อ Siamraptor suwati',
     ),
     _FossilItem(
-      assetPath: 'assets/images/fossil_vertebra.jpg',
+      assetPath: 'assets/images/museums/bone3.jpg',
       part: 'กระดูกสันหลัง',
       title: 'กระดูกสันหลังส่วนคอ',
       description:
@@ -1258,7 +1258,7 @@ class _FossilGallery extends StatelessWidget {
           'สอดคล้องกับพฤติกรรมไดโนเสาร์กินเนื้อขนาดใหญ่',
     ),
     _FossilItem(
-      assetPath: 'assets/images/fossil_limb.jpg',
+      assetPath: 'assets/images/museums/bone2.jpg',
       part: 'แขนและมือ',
       title: 'กระดูกแขนส่วนหน้า',
       description:
@@ -1607,67 +1607,121 @@ class _BehaviorChip extends StatelessWidget {
 }
 
 class _HabitatMapCard extends StatelessWidget {
+  static const _imagePath = 'assets/images/museums/discovery1.png';
+
   const _HabitatMapCard();
 
   @override
   Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: 16 / 9,
-      child: _GlassPanel(
-        padding: EdgeInsets.zero,
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(16),
+      child: AspectRatio(
+        aspectRatio: 16 / 9,
         child: Stack(
           fit: StackFit.expand,
           children: [
-            DecoratedBox(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    _surfaceCard,
-                    AppColors.primaryGreen.withValues(alpha: 0.6),
-                  ],
+            // รูปภาพแผนที่ — ถ้าไม่มีไฟล์แสดง placeholder แทน
+            Image.asset(
+              _imagePath,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => _HabitatMapPlaceholder(),
+            ),
+
+            // Overlay gradient ด้านล่างเพื่อความสวยงาม
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.black.withValues(alpha: 0.55),
+                    ],
+                  ),
                 ),
+                child: const SizedBox(height: 64),
               ),
             ),
-            CustomPaint(
-              painter: _GridPatternPainter(
-                color: _accentGreen.withValues(alpha: 0.08),
+
+            // Tag ป้ายชื่อมุมซ้ายล่าง
+            Positioned(
+              left: 12,
+              bottom: 12,
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.5),
+                  borderRadius: BorderRadius.circular(20),
+                  border:
+                      Border.all(color: _accentGreen.withValues(alpha: 0.4)),
+                ),
               ),
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  width: 52,
-                  height: 52,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: _accentGreen.withValues(alpha: 0.15),
-                    border: Border.all(
-                      color: _accentGreen.withValues(alpha: 0.35),
-                    ),
-                  ),
-                  child: const Icon(
-                    Icons.map_rounded,
-                    color: _accentGreen,
-                    size: 26,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  'ภาพสถานที่ 16:9',
-                  style: TextStyle(
-                    color: Colors.grey.shade400,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _HabitatMapPlaceholder extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            _surfaceCard,
+            AppColors.primaryGreen.withValues(alpha: 0.6),
+          ],
+        ),
+      ),
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          CustomPaint(
+            painter: _GridPatternPainter(
+              color: _accentGreen.withValues(alpha: 0.08),
+            ),
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 52,
+                height: 52,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: _accentGreen.withValues(alpha: 0.15),
+                  border: Border.all(
+                    color: _accentGreen.withValues(alpha: 0.35),
+                  ),
+                ),
+                child: const Icon(
+                  Icons.add_photo_alternate_rounded,
+                  color: _accentGreen,
+                  size: 26,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                'ใส่รูป assets/images/habitat_map.jpg',
+                style: TextStyle(
+                  color: Colors.grey.shade400,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
