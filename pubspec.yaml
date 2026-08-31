@@ -40,6 +40,7 @@ flutter:
     - assets/images/contact_icons/
     - assets/images/dino/dinosaur_model/
     - assets/audio/
+    - assets/images/products/
 
   # เปิดใช้เมื่อได้รูปจาก Figma แล้ว
   # assets:

@@ -597,9 +597,7 @@ class _MorePanel extends StatelessWidget {
           icon: Icons.info_outline_rounded,
           title: 'เพิ่มเติม',
           body:
-              'ตั้งชื่อวิทยาศาสตร์ว่า Siamraptor suwati โดย Chokchaloemwong และคณะ '
-              'ซากถูกพบในกลุ่มหินโคราช จังหวัดนครราชสีมา '
-              'ถือเป็นหลักฐานสำคัญของไดโนเสาร์นักล่าขนาดใหญ่ในเอเชียตะวันออกเฉียงใต้',
+              'พื้นที่สำหรับจำหน่ายสินค้าที่ระลึกและข้อมูลติดต่อทีมพัฒนา SIAM LAP',
         ),
         SizedBox(height: 28),
         _SectionTitle(
@@ -613,7 +611,7 @@ class _MorePanel extends StatelessWidget {
         SizedBox(height: 30),
         _SectionTitle(
           title: 'นักพัฒนา',
-          subtitle: 'ติดตามผลงานและติดต่อทีมพัฒนา T-REXY',
+          subtitle: 'ติดตามผลงานและติดต่อทีมพัฒนา SIAM LAP',
         ),
         SizedBox(height: 14),
         _DeveloperContactPanel(),
@@ -638,7 +636,7 @@ class _DeveloperContactPanel extends StatelessWidget {
           _DeveloperContactTile(
             imagePath: 'assets/images/contact_icons/Instagram_icon.png',
             title: 'Instagram',
-            contact: '@ryu338_kidsada',
+            contact: '@ryuu404',
           ),
           Divider(height: 1, color: Colors.white12),
           _DeveloperContactTile(
@@ -802,24 +800,24 @@ class _SouvenirCatalog extends StatelessWidget {
 
   static const _products = [
     _SouvenirProduct(
-      name: 'เสื้อยืด Siamraptor',
-      description: 'เสื้อคอตตอนลายสยามแรปเตอร์ สำหรับนักสำรวจตัวน้อย',
-      price: '฿ 390',
-      assetPath: 'assets/images/demo/demo.jpg',
+      name: 'กำไรข้อมือ SIAM LAP',
+      description: 'กำไรสำหรับเก็บความทรงจำจากโลกยุคดึกดำบรรพ์ของสยามแรปเตอร์',
+      price: '฿ 89',
+      assetPath: 'assets/images/products/siamlap1.png',
       badge: 'แนะนำ',
     ),
     _SouvenirProduct(
-      name: 'โปสเตอร์นักล่าแห่งโคราช',
-      description: 'โปสเตอร์ภาพประกอบ Siamraptor สำหรับตกแต่งห้อง',
-      price: '฿ 149',
-      assetPath: 'assets/images/demo/poster.jpg',
+      name: 'เสื้อยืด SIAM LAP',
+      description: 'เสื้อคอตตอนลายสยามแรปเตอร์ สำหรับนักสำรวจตัวน้อย',
+      price: '฿ 399',
+      assetPath: 'assets/images/products/siamlap2.png',
       badge: 'สินค้าใหม่',
     ),
     _SouvenirProduct(
-      name: 'เข็มกลัด T-REXY',
-      description: 'เข็มกลัดโลโก้ T-REXY รุ่นสะสม จำนวนจำกัด',
+      name: 'เข็มกลัด SIAM LAP',
+      description: 'เข็มกลัดโลโก้ SIAM LAP รุ่นสะสม จำนวนจำกัด',
       price: '฿ 99',
-      assetPath: 'assets/images/demo/images.jpg',
+      assetPath: 'assets/images/products/siamlap3.png',
     ),
   ];
 
@@ -1244,25 +1242,25 @@ class _FossilGallery extends StatelessWidget {
   static const _items = [
     _FossilItem(
       assetPath: 'assets/images/museums/bone4.jpg',
-      part: 'ขากรรไกรบน',
-      title: 'กระดูกขากรรไกร',
-      description: 'ฟอสซิลขากรรไกรบนช่วยยืนยันลักษณะฟันหยักของนักล่า '
+      part: 'ฟัน',
+      title: 'ฟัน Saiamraptor suwati',
+      description: 'ฟอสซิลฟันช่วยยืนยันลักษณะของนักล่าขนาดใหญ่'
           'และเป็นหลักฐานสำคัญที่ใช้ตั้งชื่อ Siamraptor suwati',
     ),
     _FossilItem(
       assetPath: 'assets/images/museums/bone3.jpg',
-      part: 'กระดูกสันหลัง',
-      title: 'กระดูกสันหลังส่วนคอ',
+      part: 'ขากรรไกร',
+      title: 'ขากรรไกร Siamraptor suwati',
       description:
-          'รูปร่างของกระดูกสันหลังบ่งชี้คอที่แข็งแรง เหมาะกับการจับและฉีกเหยื่อ '
+          'รูปร่างของขากรรไกร เหมาะกับการจับและฉีกเหยื่อ '
           'สอดคล้องกับพฤติกรรมไดโนเสาร์กินเนื้อขนาดใหญ่',
     ),
     _FossilItem(
       assetPath: 'assets/images/museums/bone2.jpg',
-      part: 'แขนและมือ',
-      title: 'กระดูกแขนส่วนหน้า',
+      part: 'กระดูกหน้าแข้ง',
+      title: 'กระดูกหน้าแข้ง Siamraptor suwati',
       description:
-          'ชิ้นส่วนแขนและอุ้งมือช่วยเล่าถึงการเคลื่อนไหวและการใช้กรงเล็บ '
+          'ชิ้นส่วนกระดูกหน้าแข้งช่วยเล่าถึงการเคลื่อนไหว '
           'ขณะไล่ล่าในภูมิประเทศยุคครีเทเชียสของไทย',
     ),
   ];
