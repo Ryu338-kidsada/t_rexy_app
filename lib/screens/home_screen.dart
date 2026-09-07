@@ -1041,7 +1041,7 @@ class _MuseumGalleryState extends State<_MuseumGallery> {
 
   static const _slides = [
     _MuseumSlide(
-      assetPath: 'assets/images/museums/museum_korat.jpg',
+      assetPath: 'assets/images/museums/museum_korat.png',
       location: 'พิพิธภัณฑ์ไม้กลายเป็นหินฯ · นครราชสีมา',
     ),
     _MuseumSlide(
@@ -1100,7 +1100,7 @@ class _MuseumGalleryState extends State<_MuseumGallery> {
                               fit: BoxFit.cover,
                               errorBuilder: (_, __, ___) =>
                                   const _FossilPlaceholder(
-                                      label: 'รอใส่ภาพพิพิธภัณฑ์'),
+                                      label: 'ยังไม่มีภาพของพิพิธภัณฑ์'),
                             ),
                           );
                         },
